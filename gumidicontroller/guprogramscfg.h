@@ -47,29 +47,27 @@ constexpr Action InputA() { return { MidiNone(), UserSelectInputA(), Action::Act
 constexpr Action InputB() { return { MidiNone(), UserSelectInputB(), Action::ActionTypeUser }; };
 
 template <byte numberOfUserButtons, 
-          typename T, 
           byte lengthOfLcdDescription>
 struct guProgramConfig { 
   const CfgId id;
-  const T v[numberOfUserButtons];
+  const Action v[numberOfUserButtons];
   const char programHeader[lengthOfLcdDescription];
   const char programIdleTooltip[lengthOfLcdDescription];
 };
 
 template <byte numberOfPrograms, 
           byte numberOfUserButtons, 
-          typename T, 
           byte lengthOfLcdDescription>
 struct guProgramsCfg { 
-  using programConfig = guProgramConfig<numberOfUserButtons, T, lengthOfLcdDescription>;
+  using programConfig = guProgramConfig<numberOfUserButtons, lengthOfLcdDescription>;
   const programConfig *c;
   eepromAddress eepromAddrLastProgram;
   byte currentProgram;
   
-  guProgramsCfg(const programConfig* config, const eepromAddress &eepromMemoryAddress):c(config), eepromAddrLastProgram(eepromMemoryAddress){};
+  guProgramsCfg(const programConfig* config, const eepromAddress &eepromMemoryAddress):c(config), eepromAddrLastProgram(eepromMemoryAddress) {};
   void saveProgramIndex(){ EEPROM.update(eepromAddrLastProgram, currentProgram); }
   void loadProgramIndex(){ currentProgram = EEPROM.read(eepromAddrLastProgram) % numberOfPrograms; }
-  T get(byte id) const { return c[currentProgram].v[id]; }
+  Action get(byte id) const { return c[currentProgram].v[id]; }
   void next() { currentProgram = (currentProgram + 1) % numberOfPrograms; saveProgramIndex(); }
   void prev() { currentProgram = (currentProgram == 0 ? currentProgram = numberOfPrograms - 1 : currentProgram - 1); saveProgramIndex(); }
   String header(){ return c[currentProgram].programHeader; }

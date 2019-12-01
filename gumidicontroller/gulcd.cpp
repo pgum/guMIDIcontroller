@@ -33,8 +33,9 @@ void guLcd::printMidiSend(const byte id, const String text) {
 void guLcd::printProgramChange(const String status, const String tooltip) {
   //lcd.backlight();
   printFirstLine(status);
-  printSecondLine(tooltip);
-  printWithDelay(1, tooltip);
+  //printSecondLine(tooltip);
+  printWithDelay(tooltip, 1);
+  extendLcdBacklight(extendLcdBacklightMs);
   //Serial.print(status);
   //Serial.print(" ");
   //Serial.println(tooltip);
@@ -52,7 +53,7 @@ void guLcd::printSecondLine(const String text) {
   lcd.print(text);
   //Serial.println(text);
 }
-void guLcd::printWithDelay(unsigned long timeMs, String text) {
+void guLcd::printWithDelay(String text, unsigned long timeMs) {
   auto newTime = millis() + timeMs;
   lcdDelayPrintTime = newTime;
   delayString = text;

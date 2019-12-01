@@ -8,7 +8,7 @@
 
 namespace {
 const char* ProductName = "GuMIDI mk.3";
-const char* ProductVersion = "0.9125";
+const char* ProductVersion = "0.9128";
 constexpr byte numberOfPrograms = 7;
 constexpr byte numberOfUserButtons = 4;
 constexpr byte numberOfControlButtons = 2;
@@ -28,10 +28,9 @@ constexpr i2cAddress lcdI2C = 0x27;
 constexpr lcdDimention lcdDimentionY = 16;
 constexpr stringBufferSize lcdStringSize = lcdDimentionY + sizeof("");
 constexpr lcdDimention lcdDimentionX = 2;
-constexpr lcdStayAwakeTimeMS stayAwakeTime = 2000;
+
 constexpr SerialBaudRate serialBaud = 115200;
-constexpr lcdStayAwakeTimeMS extendLcdBacklightMs = 20000;
-constexpr lcdStayAwakeTimeMS lcdRedrawTooltipAfterMs = 2000; 
+
 
 constexpr guHwConfig <numberOfUserButtons, numberOfControlButtons> hwCfg {
   { { CfgId::Id0, btn0pin6 },
@@ -42,7 +41,7 @@ constexpr guHwConfig <numberOfUserButtons, numberOfControlButtons> hwCfg {
     { CfgId::Id1, ctrlBtn1Pin16 } },
 };
 
-constexpr guProgramConfig<numberOfUserButtons, Action, lcdStringSize> programsConfigs[numberOfPrograms] {
+constexpr guProgramConfig<numberOfUserButtons, lcdStringSize> programsConfigs[numberOfPrograms] {
   { CfgId::Id0, { Note(36), Note(37), Note(38), Note(39) },"1/7  S8 ch. 1,2 ", "36 37 <\1\1> 38 39" },
   { CfgId::Id1, { Note(41), Note(42), Note(43), Note(44) },"2/7  S8 ch. 3,4 ", "41 42 <\1\1> 43 44" },
   { CfgId::Id2, { Note(45), Note(46), Note(38), Note(49) },"3/7  S8 ch. 5,6 ", "45 46 <\1\1> 48 49" },
@@ -55,10 +54,7 @@ constexpr guProgramConfig<numberOfUserButtons, Action, lcdStringSize> programsCo
 guLcd lcd(lcdI2C, lcdDimentionY, lcdDimentionX); 
 guHwApi<numberOfUserButtons, numberOfControlButtons> hwApi(hwCfg);
 
-guProgramsCfg<numberOfPrograms,
-              numberOfUserButtons, 
-              Action, 
-              lcdStringSize> programs(programsConfigs, eepromAddrLastProgram);
+guProgramsCfg<numberOfPrograms, numberOfUserButtons, lcdStringSize> programs(programsConfigs, eepromAddrLastProgram);
 }
 
 void handleMidiEvent(const MidiValue& midi) {
@@ -71,9 +67,9 @@ void handleUserEvent(const UserValue& user) {
     if(user.value == UserValue::UserInputB) selectInputB();
 }
 void handleUserButtonsEvent(AceButton* button, uint8_t eventType, uint8_t) {
-  lcd.extendLcdBacklight(extendLcdBacklightMs);
+  lcd.extendLcdBacklight();
   //Serial.println(programs.tooltip());
-  lcd.printWithDelay(lcdRedrawTooltipAfterMs, programs.tooltip());
+  lcd.printWithDelay(programs.tooltip());
   const auto id = button->getId();
   const auto currentAction = programs.get(id);
   const auto currentActionType = currentAction.type;
@@ -92,7 +88,7 @@ void handleUserButtonsEvent(AceButton* button, uint8_t eventType, uint8_t) {
 }
 
 void handleControlButtonsEvent(AceButton* button, uint8_t eventType, uint8_t) {
-  lcd.extendLcdBacklight(extendLcdBacklightMs);
+  lcd.extendLcdBacklight();
   const auto id = button->getId();
   if(eventType == AceButton::kEventPressed) {
     if(id == Id2Byte(CfgId::Id0)){ programs.prev(); lcd.printProgramChange(programs.header(), programs.tooltip());}
@@ -122,7 +118,7 @@ void setup() {
   hwApi.init();
   programs.loadProgramIndex();
   lcd.printProgramChange(programs.header(), programs.tooltip());
-  lcd.extendLcdBacklight(extendLcdBacklightMs);
+
 }
 
 void loop() {

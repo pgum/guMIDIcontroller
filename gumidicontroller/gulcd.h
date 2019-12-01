@@ -8,10 +8,12 @@
 using i2cAddress = byte;
 using lcdDimention = byte;
 using stringBufferSize = byte;
-using lcdStayAwakeTimeUS = unsigned long;
+using lcdStayAwakeTimeMS = unsigned long;
 
 class guLcd {
   public:
+  constexpr static lcdStayAwakeTimeMS extendLcdBacklightMs = 20000;
+  constexpr static lcdStayAwakeTimeMS lcdRedrawTooltipAfterMs = 2000; 
   unsigned long lcdBacklightTime;
   unsigned long lcdDelayPrintTime;
   String delayString;
@@ -20,13 +22,13 @@ class guLcd {
   void printMidiSend(const byte id, String text);
   void printProgramChange(const String status, const String tooltip);
   void printSecondLine(String text); 
-  void printWithDelay(unsigned long timeMs, String text); 
+  void printWithDelay(String text, lcdStayAwakeTimeMS timeMs = lcdRedrawTooltipAfterMs); 
   //bool isBacklight();
   void noBacklight();
   void backlight();
   void enableAlwaysOn();
   void disableAlwaysOn();
-  void extendLcdBacklight(unsigned long timeMs);
+  void extendLcdBacklight(lcdStayAwakeTimeMS timeMs = extendLcdBacklightMs);
   void update();
   private:
   bool alwaysOn;
