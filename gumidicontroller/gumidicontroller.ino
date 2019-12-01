@@ -59,34 +59,25 @@ void handleMidiEvent(const MidiValue& midi) {
 
 void handleUserEvent(const UserAction& user) {
     lcd.printSecondLine(user.toString());
-    //auto was = jackSelector.selectedInput;
     if(user.value == UserAction::UserInputA) jackSelector.SelectA();
     if(user.value == UserAction::UserInputB) jackSelector.SelectB();
-    //Serial.print("Input Selector wrote to EEPROM: ");
-    //Serial.print(jackSelector.selectedInput);
-    //Serial.print(" was: ");
-    //Serial.println(was);
     EEPROM.update(eepromAddrOutputSelector, jackSelector.selectedInput); 
 }
 
 void handleUserButtonsEvent(AceButton* button, uint8_t eventType, uint8_t) {
   lcd.extendLcdBacklight();
-  //Serial.println(programs.tooltip());
   lcd.printWithDelay(programs.tooltip());
   const auto buttonId = button->getId();
   const auto currentAction = programs.getActionForButton(buttonId);
   const auto currentActionType = currentAction.type;
   if(eventType == AceButton::kEventPressed) {
-    //Serial.println(currentActionType);
-    //Serial.println(currentAction.toString());
     if(currentActionType == Action::ActionTypeMidi) {
-      lcd.printMidiSend(buttonId, currentAction.toString()); 
       handleMidiEvent(currentAction.mv);
     }
     else if(currentActionType == Action::ActionTypeUser){
-      lcd.printSecondLine(currentAction.toString()); 
       handleUserEvent(currentAction.uv);
     }
+    lcd.printSecondLine(currentAction.toString()); 
   }
 }
 
@@ -106,7 +97,6 @@ void handleControlButtonsEvent(AceButton* button, uint8_t eventType, uint8_t) {
 
 void setup() {
   Serial.begin(serialBaud);
-  //jackSelector.init();
   hwApi.userButtonsEventHandler = handleUserButtonsEvent;
   hwApi.ctrlButtonsEventHandler = handleControlButtonsEvent;
   hwApi.init();

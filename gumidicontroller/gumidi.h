@@ -34,27 +34,11 @@ struct MidiValue {
   constexpr midiEventPacket_t turnOffPacket(){ return isnote ? midiNoteOff() : midiCc(OffValue); }
 };
 
-
 constexpr MidiValue MidiNone() { return {0, false, NULL}; }
 constexpr MidiValue MidiNote(byte v) { return {v, true, NULL}; }
 constexpr MidiValue MidiCC(byte v) { return {v, false, NULL}; }
 constexpr MidiValue MidiTransport(byte v, const char* abbr4char) { return {v, false, abbr4char}; }
-/*constexpr MidiValue MidiRewind() { return {116, false, "Rew "}; }
-constexpr MidiValue MidiFastForward() { return {117, false, "FFwd"}; }
-constexpr MidiValue MidiStop() { return {118, false, "Stop"}; }
-constexpr MidiValue MidiPlay() { return {119, false, "Play"}; }
-constexpr MidiValue MidiLoop() { return {115, false, "Loop"}; }
-constexpr MidiValue MidiRecord() { return {114, false, "Rec "}; }
-*/
-/*
-template <byte numOfModes>
-struct MidiCfg { 
-  const byte pin;
-  const CfgId id;
-  const MidiValue modes[numOfModes];
-  const MidiValue getMidi(byte mode) const{ return modes[mode]; }
-};
-*/
+
 void sendMidiOnce(const MidiValue& midi) {
   MidiUSB.sendMIDI(midi.getPacket());
   MidiUSB.flush();

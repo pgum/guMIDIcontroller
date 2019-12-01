@@ -58,7 +58,6 @@ class guHwApi {
   void update(){
     for( auto &b : userButtons) b.check();
     for( auto &b : ctrlButtons) b.check();
-
   }
   private:
     void initUserPins() {

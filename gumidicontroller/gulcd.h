@@ -20,7 +20,6 @@ class guLcd {
   void printProgramChange(const String status, const String tooltip);
   void printSecondLine(String text); 
   void printWithDelay(String text, timeMilliSeconds timeMs = 0); 
-  //bool isBacklight();
   void noBacklight();
   void backlight();
   void enableAlwaysOn();
@@ -35,7 +34,7 @@ class guLcd {
   bool alwaysOn;
   void printFirstLine(String text);
   void printIntroScreen(const String first, const String second);
-  //bool isBacklit;
+  
   LiquidCrystal_I2C lcd;
 };
 
