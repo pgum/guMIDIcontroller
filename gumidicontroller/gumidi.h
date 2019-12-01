@@ -4,7 +4,7 @@
 #include <stddef.h>
 #include <MIDIUSB.h>
 #include <Arduino.h>
-#include "helpers.h"
+#include "guhelpers.h"
 
 constexpr byte Channel = 1;
 constexpr byte On = 1;

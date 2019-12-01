@@ -1,14 +1,27 @@
 #ifndef guHWapi_H
 #define guHWapi_H
 #include <AceButton.h>
-
+#include "guhelpers.h"
 using namespace ace_button;
 
-using inputPin = byte;
+using Pin = byte;
+
+constexpr Pin Pin06 = 6;
+constexpr Pin Pin07 = 7;
+constexpr Pin Pin08 = 8;
+constexpr Pin Pin09 = 9;
+constexpr Pin Pin10 = 10;
+constexpr Pin Pin14 = 14;
+constexpr Pin Pin15 = 15;
+constexpr Pin Pin16 = 16;
+constexpr Pin Pin18 = 18;
+constexpr Pin Pin19 = 19;
+constexpr Pin Pin20 = 20;
+constexpr Pin Pin21 = 21;
 
 struct guButtonCfg{
-  const CfgId id;
-  const byte pin;
+  const Id id;
+  const Pin pin;
 };
 
 template <byte numberOfUserButtons, byte numberOfControlButtons>
@@ -51,17 +64,15 @@ class guHwApi {
     void initUserPins() {
       for(const auto &b : cfg.userBtns){
         pinMode(b.pin, pinConnectionTypeInputPullup);
-        auto id = Id2Byte(b.id);
-        userButtons[id].setButtonConfig(&userButtonConfig);
-        userButtons[id].init(b.pin, pinConnectionTypeEventOnStateHigh, id);
+        userButtons[b.id].setButtonConfig(&userButtonConfig);
+        userButtons[b.id].init(b.pin, pinConnectionTypeEventOnStateHigh, b.id);
       }
     }
     void initCtrlPins() {
       for(const auto &b : cfg.ctrlBtns){
         pinMode(b.pin, pinConnectionTypeInputPullup);
-        auto id = Id2Byte(b.id);
-        ctrlButtons[id].setButtonConfig(&ctrlButtonConfig);
-        ctrlButtons[id].init(b.pin, pinConnectionTypeEventOnStateHigh, id);
+        ctrlButtons[b.id].setButtonConfig(&ctrlButtonConfig);
+        ctrlButtons[b.id].init(b.pin, pinConnectionTypeEventOnStateHigh, b.id);
       }
     }
 };

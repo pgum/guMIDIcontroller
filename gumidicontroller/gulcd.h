@@ -3,17 +3,14 @@
 
 #include <Arduino.h>
 #include <LiquidCrystal_I2C.h>
-
+#include "guhelpers.h"
 
 using i2cAddress = byte;
 using lcdDimention = byte;
 using stringBufferSize = byte;
-using lcdStayAwakeTimeMS = unsigned long;
 
 class guLcd {
   public:
-  constexpr static lcdStayAwakeTimeMS extendLcdBacklightMs = 20000;
-  constexpr static lcdStayAwakeTimeMS lcdRedrawTooltipAfterMs = 2000; 
   unsigned long lcdBacklightTime;
   unsigned long lcdDelayPrintTime;
   String delayString;
@@ -22,15 +19,19 @@ class guLcd {
   void printMidiSend(const byte id, String text);
   void printProgramChange(const String status, const String tooltip);
   void printSecondLine(String text); 
-  void printWithDelay(String text, lcdStayAwakeTimeMS timeMs = lcdRedrawTooltipAfterMs); 
+  void printWithDelay(String text, timeMilliSeconds timeMs = 0); 
   //bool isBacklight();
   void noBacklight();
   void backlight();
   void enableAlwaysOn();
   void disableAlwaysOn();
-  void extendLcdBacklight(lcdStayAwakeTimeMS timeMs = extendLcdBacklightMs);
+  void extendLcdBacklight(timeMilliSeconds timeMs = 0);
   void update();
+  void setExtendLcdBacklightMs(timeMilliSeconds timeMs);
+  void setLcdRedrawTooltipAfterMs(timeMilliSeconds timeMs);
   private:
+  timeMilliSeconds extendLcdBacklightMs;
+  timeMilliSeconds lcdRedrawTooltipAfterMs;
   bool alwaysOn;
   void printFirstLine(String text);
   void printIntroScreen(const String first, const String second);

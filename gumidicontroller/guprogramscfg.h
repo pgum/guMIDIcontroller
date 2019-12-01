@@ -1,31 +1,33 @@
 #ifndef guProgramsCfg_H
 #define guProgramsCfg_H
-#include <EEPROM.h>
 
 using eepromAddress = byte;
+using ActionType = byte;
 
-struct UserValue {
-  const byte value;
+struct UserAction {
+  using UserActionType = byte;
+  const UserActionType value;
   const char* abbr8;
-  constexpr static byte UserInputA = 10;
-  constexpr static byte UserInputB = 11;
+  constexpr static UserActionType UserActionNone = 0;
+  constexpr static UserActionType UserInputA = 10;
+  constexpr static UserActionType UserInputB = 11;
   String toString() const { return (String(value) +  String(" ") + ((abbr8 != NULL) ? String(abbr8) : String("        ")) + String("     ")); }
 };
 
-constexpr UserValue UserNone() { return {0, NULL}; }
-constexpr UserValue UserSelectInputA() { return {UserValue::UserInputA, "A -> Out"}; }
-constexpr UserValue UserSelectInputB() { return {UserValue::UserInputB, "B -> Out"}; }
+constexpr UserAction UserNone() { return {UserAction::UserActionNone, NULL}; }
+constexpr UserAction UserSelectInputA() { return {UserAction::UserInputA, "A -> Out"}; }
+constexpr UserAction UserSelectInputB() { return {UserAction::UserInputB, "B -> Out"}; }
 
 struct Action {
   const MidiValue mv;
-  const UserValue uv;
+  const UserAction uv;
   const byte type;
 
   constexpr static byte ActionTypeNone = 0x00;
   constexpr static byte ActionTypeMidi = 0x01;
   constexpr static byte ActionTypeUser = 0x02;
   operator MidiValue(){ return mv; }
-  operator UserValue(){ return uv; }
+  operator UserAction(){ return uv; }
   String toString() const { 
     if(type == ActionTypeMidi) return mv.toString();
     if(type == ActionTypeUser) return uv.toString();
@@ -49,7 +51,7 @@ constexpr Action InputB() { return { MidiNone(), UserSelectInputB(), Action::Act
 template <byte numberOfUserButtons, 
           byte lengthOfLcdDescription>
 struct guProgramConfig { 
-  const CfgId id;
+  const ProgramId id;
   const Action v[numberOfUserButtons];
   const char programHeader[lengthOfLcdDescription];
   const char programIdleTooltip[lengthOfLcdDescription];
@@ -61,15 +63,14 @@ template <byte numberOfPrograms,
 struct guProgramsCfg { 
   using programConfig = guProgramConfig<numberOfUserButtons, lengthOfLcdDescription>;
   const programConfig *c;
-  eepromAddress eepromAddrLastProgram;
   byte currentProgram;
   
-  guProgramsCfg(const programConfig* config, const eepromAddress &eepromMemoryAddress):c(config), eepromAddrLastProgram(eepromMemoryAddress) {};
-  void saveProgramIndex(){ EEPROM.update(eepromAddrLastProgram, currentProgram); }
-  void loadProgramIndex(){ currentProgram = EEPROM.read(eepromAddrLastProgram) % numberOfPrograms; }
-  Action get(byte id) const { return c[currentProgram].v[id]; }
-  void next() { currentProgram = (currentProgram + 1) % numberOfPrograms; saveProgramIndex(); }
-  void prev() { currentProgram = (currentProgram == 0 ? currentProgram = numberOfPrograms - 1 : currentProgram - 1); saveProgramIndex(); }
+  guProgramsCfg(const programConfig* config):c(config) {};
+  Action getActionForButton(BtnId buttonId) const { return c[currentProgram].v[buttonId]; }
+  void setProgram(byte programNumber) { currentProgram = programNumber % numberOfPrograms; }
+  byte getProgram() { return currentProgram % numberOfPrograms; }
+  void next() { currentProgram = (currentProgram + 1) % numberOfPrograms; }
+  void prev() { currentProgram = (currentProgram == 0 ? currentProgram = numberOfPrograms - 1 : currentProgram - 1); }
   String header(){ return c[currentProgram].programHeader; }
   String tooltip(){ return c[currentProgram].programIdleTooltip; }
   };

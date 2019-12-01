@@ -54,6 +54,7 @@ void guLcd::printSecondLine(const String text) {
   //Serial.println(text);
 }
 void guLcd::printWithDelay(String text, unsigned long timeMs) {
+  timeMs = timeMs == 0 ? lcdRedrawTooltipAfterMs : timeMs;
   auto newTime = millis() + timeMs;
   lcdDelayPrintTime = newTime;
   delayString = text;
@@ -82,6 +83,8 @@ void guLcd::backlight() {
 }
 void guLcd::enableAlwaysOn(){ alwaysOn = true; };
 void guLcd::disableAlwaysOn(){ alwaysOn = false; };
+void guLcd::setExtendLcdBacklightMs(timeMilliSeconds timeMs){ extendLcdBacklightMs = timeMs; }
+void guLcd::setLcdRedrawTooltipAfterMs(timeMilliSeconds timeMs){ lcdRedrawTooltipAfterMs = timeMs; }
 
 void guLcd::extendLcdBacklight(unsigned long timeMs) {
   auto newTime = millis() + timeMs;
