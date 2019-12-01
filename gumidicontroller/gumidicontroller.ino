@@ -1,4 +1,3 @@
-//#include <MIDIUSB.h>
 #include <AceButton.h>
 #include <ButtonConfig.h>
 #include "helpers.h"
@@ -9,7 +8,7 @@
 
 namespace {
 const char* ProductName = "GuMIDI mk.3";
-const char* ProductVersion = "0.9123";
+const char* ProductVersion = "0.9125";
 constexpr byte numberOfPrograms = 7;
 constexpr byte numberOfUserButtons = 4;
 constexpr byte numberOfControlButtons = 2;
@@ -73,14 +72,14 @@ void handleUserEvent(const UserValue& user) {
 }
 void handleUserButtonsEvent(AceButton* button, uint8_t eventType, uint8_t) {
   lcd.extendLcdBacklight(extendLcdBacklightMs);
-  Serial.println(programs.tooltip());
+  //Serial.println(programs.tooltip());
   lcd.printWithDelay(lcdRedrawTooltipAfterMs, programs.tooltip());
   const auto id = button->getId();
   const auto currentAction = programs.get(id);
   const auto currentActionType = currentAction.type;
   if(eventType == AceButton::kEventPressed) {
-    Serial.println( currentActionType);
-    Serial.println( currentAction.toString());
+    //Serial.println(currentActionType);
+    //Serial.println(currentAction.toString());
     if(currentActionType == Action::ActionTypeMidi) {
       lcd.printMidiSend(id, currentAction.toString()); 
       handleMidiEvent(currentAction.mv);
@@ -96,9 +95,13 @@ void handleControlButtonsEvent(AceButton* button, uint8_t eventType, uint8_t) {
   lcd.extendLcdBacklight(extendLcdBacklightMs);
   const auto id = button->getId();
   if(eventType == AceButton::kEventPressed) {
-    if(id == Id2Byte(CfgId::Id0)){ programs.prev(); }
-    if(id == Id2Byte(CfgId::Id1)){ programs.next(); }
-  lcd.printProgramChange(programs.header(), programs.tooltip());
+    if(id == Id2Byte(CfgId::Id0)){ programs.prev(); lcd.printProgramChange(programs.header(), programs.tooltip());}
+    if(id == Id2Byte(CfgId::Id1)){ programs.next(); lcd.printProgramChange(programs.header(), programs.tooltip());}
+
+    if(id == Id2Byte(CfgId::Id2)){ lcd.enableAlwaysOn(); }
+
+  }else if(eventType == AceButton::kEventReleased) {
+    if(id == Id2Byte(CfgId::Id2)){ lcd.disableAlwaysOn(); }
   }
 }
 
@@ -108,7 +111,6 @@ void selectInputA(){
 void selectInputB(){
   Serial.println("digitalWrite(outputSelectorPin18,LOW);");
 }
-volatile byte count = 0;
 
 void setup() {
  

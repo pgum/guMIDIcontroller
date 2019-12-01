@@ -35,9 +35,9 @@ void guLcd::printProgramChange(const String status, const String tooltip) {
   printFirstLine(status);
   printSecondLine(tooltip);
   printWithDelay(1, tooltip);
-   Serial.print(status);
-   Serial.print(" ");
-   Serial.println(tooltip);
+  //Serial.print(status);
+  //Serial.print(" ");
+  //Serial.println(tooltip);
 }
 void guLcd::printFirstLine(const String text) {
   lcd.setCursor(0, 0);
@@ -56,10 +56,10 @@ void guLcd::printWithDelay(unsigned long timeMs, String text) {
   auto newTime = millis() + timeMs;
   lcdDelayPrintTime = newTime;
   delayString = text;
-  Serial.print("New print with delay on ");
-  Serial.print(lcdBacklightTime);
-  Serial.print(" text: ");
-  Serial.println(delayString);
+  //Serial.print("New print with delay on ");
+  //Serial.print(lcdBacklightTime);
+  //Serial.print(" text: ");
+  //Serial.println(delayString);
 }
 void guLcd::printIntroScreen(const String first, const String second) {
   lcd.backlight();  
@@ -68,8 +68,8 @@ void guLcd::printIntroScreen(const String first, const String second) {
   lcd.setCursor(0,1);
   lcd.print(second);
   delay(3000);
-  Serial.println(first);
-  Serial.println(second);
+  //Serial.println(first);
+  //Serial.println(second);
 }
 void guLcd::noBacklight() {
   lcd.noBacklight();
@@ -85,16 +85,16 @@ void guLcd::disableAlwaysOn(){ alwaysOn = false; };
 void guLcd::extendLcdBacklight(unsigned long timeMs) {
   auto newTime = millis() + timeMs;
   lcdBacklightTime = lcdBacklightTime < newTime ? newTime : lcdBacklightTime;
-  Serial.print("New backlight timeout: ");
-  Serial.println(lcdBacklightTime);
+  //Serial.print("New backlight timeout: ");
+  //Serial.println(lcdBacklightTime);
 }
 void guLcd::update(){
   auto now = millis();
 if(not alwaysOn){
   if(lcdBacklightTime != 0){
     if(now > lcdBacklightTime){
-      Serial.print(now);
-      Serial.println(" Lights off!");
+      //Serial.print(now);
+      //Serial.println(" Lights off!");
       lcd.noBacklight();
       lcdBacklightTime = 0;
     }else{
@@ -107,9 +107,9 @@ if(not alwaysOn){
 
 if(lcdDelayPrintTime != 0){
   if(now > lcdDelayPrintTime){
-      Serial.print(now);
-      Serial.print(" reprint with delay: ");
-      Serial.println(delayString);
+      //Serial.print(now);
+      //Serial.print(" reprint with delay: ");
+      //Serial.println(delayString);
       printSecondLine(delayString);
       lcdDelayPrintTime = 0;
     }
