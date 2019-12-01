@@ -3,11 +3,11 @@
 
 using SerialBaudRate = unsigned long;
 using timeMilliSeconds = unsigned long;
-constexpr unsigned long milliseconds = 1;
-constexpr unsigned long seconds = 1000;
-using UserBtnId = byte;
-using CtrlBtnId = byte;
-using BtnId = byte;
+constexpr timeMilliSeconds milliseconds = 1;
+constexpr timeMilliSeconds seconds = 1000;
 using Id = byte;
-using ProgramId = byte;
+using UserBtnId = Id;
+using CtrlBtnId = Id;
+using BtnId = Id;
+using ProgramId = Id;
 #endif

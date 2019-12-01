@@ -22,9 +22,11 @@ struct MidiValue {
   const char* abbr;
   constexpr bool isNote() const { return isnote; }
   String toString() const { 
-    String representation_basic = (String(value) +  String(isNote() ?  " Note" : " CC  "));
+    String representation_basic = "Midi " + String(value) +  (isNote() ?  " Note" : " CC  ");
     if(value > 99) representation_basic += " ";
-    return( ((abbr != NULL) ? String(abbr) + String(" ") + representation_basic : representation_basic + String("          ")) + String("          ") ); 
+    return( ((abbr != NULL) ? 
+              String(abbr) + " " + representation_basic : 
+              representation_basic + "          ") + String("          ") ); 
   }
   constexpr midiEventPacket_t midiNoteOn(){ return { noteOnByte >> 4, noteOnByte | Channel, value, MaxVelocity }; }
   constexpr midiEventPacket_t midiNoteOff(){ return { noteOffByte >> 4, noteOffByte | Channel, value, MaxVelocity }; }

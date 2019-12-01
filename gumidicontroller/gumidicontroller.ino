@@ -10,7 +10,7 @@
 
 namespace {
 const char* ProductName = "GuMIDI mk.3";
-const char* ProductVersion = "0.9150";
+const char* ProductVersion = "0.9160";
 constexpr byte numberOfPrograms = 7;
 constexpr byte numberOfUserButtons = 4;
 constexpr byte numberOfControlButtons = 2;
@@ -23,8 +23,8 @@ constexpr i2cAddress lcdI2C = 0x27;
 constexpr lcdDimention lcdDimentionY = 16;
 constexpr stringBufferSize lcdStringSize = lcdDimentionY + sizeof("");
 constexpr lcdDimention lcdDimentionX = 2;
-constexpr timeMilliSeconds extendLcdBacklightTimeout = 30 * seconds;
-constexpr timeMilliSeconds lcdRedrawTooltipTimeout = 2 * seconds; 
+constexpr timeMilliSeconds extendLcdBacklightTimeout = 60 * seconds;
+constexpr timeMilliSeconds lcdRedrawTooltipTimeout = 3 * seconds; 
 
 constexpr Pin outputSelectorPin = Pin18;
 
@@ -82,14 +82,17 @@ void handleUserButtonsEvent(AceButton* button, uint8_t eventType, uint8_t) {
 }
 
 void handleControlButtonsEvent(AceButton* button, uint8_t eventType, uint8_t) {
-  lcd.extendLcdBacklight();
   const auto ctrlBtnId = button->getId();
   if(eventType == AceButton::kEventPressed) {
-    if(ctrlBtnId == CtrlBtnId(0)){ programs.prev(); lcd.printProgramChange(programs.header(), programs.tooltip());}
-    if(ctrlBtnId == CtrlBtnId(1)){ programs.next(); lcd.printProgramChange(programs.header(), programs.tooltip());}
-
+    if(lcd.isBacklight()){
+      if(ctrlBtnId == CtrlBtnId(0)){ programs.prev(); lcd.printProgramChange(programs.header(), programs.tooltip());}
+      if(ctrlBtnId == CtrlBtnId(1)){ programs.next(); lcd.printProgramChange(programs.header(), programs.tooltip());}
+      EEPROM.update(eepromAddrLastProgram, programs.getProgram()); 
+    }else{
+      lcd.backlight();
+      lcd.extendLcdBacklight();
+    }
     if(ctrlBtnId == CtrlBtnId(2)){ lcd.enableAlwaysOn(); }
-    EEPROM.update(eepromAddrLastProgram, programs.getProgram()); 
   }else if(eventType == AceButton::kEventReleased) {
     if(ctrlBtnId == CtrlBtnId(2)){ lcd.disableAlwaysOn(); }
   }
@@ -97,17 +100,16 @@ void handleControlButtonsEvent(AceButton* button, uint8_t eventType, uint8_t) {
 
 void setup() {
   Serial.begin(serialBaud);
+  lcd.init();
+  lcd.setExtendLcdBacklightMs(extendLcdBacklightTimeout);
+  lcd.setLcdRedrawTooltipAfterMs(lcdRedrawTooltipTimeout);
   hwApi.userButtonsEventHandler = handleUserButtonsEvent;
   hwApi.ctrlButtonsEventHandler = handleControlButtonsEvent;
   hwApi.init();
   lcd.intro(__DATE__, __TIME__, ProductName, ProductVersion, numberOfUserButtons);
-  lcd.setExtendLcdBacklightMs(extendLcdBacklightTimeout);
-  lcd.setLcdRedrawTooltipAfterMs(lcdRedrawTooltipTimeout);
   jackSelector.selectedInput= EEPROM.read(eepromAddrOutputSelector);
   programs.setProgram(EEPROM.read(eepromAddrLastProgram));
   lcd.printProgramChange(programs.header(), programs.tooltip());
-  Serial.print("Input Selector read from EEPROM: ");
-  Serial.println(jackSelector.selectedInput);
 }
 
 void loop() {

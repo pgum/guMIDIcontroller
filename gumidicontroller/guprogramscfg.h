@@ -31,7 +31,7 @@ struct Action {
   String toString() const { 
     if(type == ActionTypeMidi) return mv.toString();
     if(type == ActionTypeUser) return uv.toString();
-    return "   None Type!   ";
+    return "";
   }
 };
 
