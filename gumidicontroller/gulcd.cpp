@@ -61,6 +61,7 @@ void guLcd::setLcdRedrawTooltipAfterMs(timeMilliSeconds timeMs){ lcdRedrawToolti
 
 void guLcd::extendLcdBacklight(unsigned long timeMs) {
   timeMs = timeMs == 0 ? lcdBacklightTime : timeMs;
+  auto newTime = millis() + timeMs;
   lcdBacklightTime = lcdBacklightTime < newTime ? newTime : lcdBacklightTime;
 }
 void guLcd::update(){

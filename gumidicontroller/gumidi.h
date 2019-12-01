@@ -24,7 +24,7 @@ struct MidiValue {
   String toString() const { 
     String representation_basic = (String(value) +  String(isNote() ?  " Note" : " CC  "));
     if(value > 99) representation_basic += " ";
-    return( ((abbr != NULL) ? String(abbr) + String(" ") + representation_basic : representation_basic + String("     ")) ); 
+    return( ((abbr != NULL) ? String(abbr) + String(" ") + representation_basic : representation_basic + String("          ")) + String("          ") ); 
   }
   constexpr midiEventPacket_t midiNoteOn(){ return { noteOnByte >> 4, noteOnByte | Channel, value, MaxVelocity }; }
   constexpr midiEventPacket_t midiNoteOff(){ return { noteOffByte >> 4, noteOffByte | Channel, value, MaxVelocity }; }
