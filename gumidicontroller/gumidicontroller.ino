@@ -1,115 +1,132 @@
 #include <EEPROM.h>
 #include <AceButton.h>
 #include <ButtonConfig.h>
+#include "guprogramscfg.h"
 #include "guhelpers.h"
 #include "gumidi.h"
 #include "gulcd.h"
 #include "guhwapi.h"
 #include "gujackselector.h"
-#include "guprogramscfg.h"
 
 namespace {
 const char* ProductName = "GuMIDI mk.3";
-const char* ProductVersion = "0.9160";
-constexpr byte numberOfPrograms = 7;
+const char* ProductVersion = "0.2020.11.10";
 constexpr byte numberOfUserButtons = 4;
-constexpr byte numberOfControlButtons = 2;
+constexpr byte numberOfControlButtons = 5;
 
 constexpr eepromAddress eepromAddrLastProgram = 0;
 constexpr eepromAddress eepromAddrOutputSelector = 1;
 
 constexpr SerialBaudRate serialBaud = 115200;
 constexpr i2cAddress lcdI2C = 0x27;
-constexpr lcdDimention lcdDimentionY = 16;
-constexpr stringBufferSize lcdStringSize = lcdDimentionY + sizeof("");
-constexpr lcdDimention lcdDimentionX = 2;
-constexpr timeMilliSeconds extendLcdBacklightTimeout = 60 * seconds;
-constexpr timeMilliSeconds lcdRedrawTooltipTimeout = 3 * seconds; 
+constexpr lcdDimention lcdCols = LcdCols16;
+constexpr stringBufferSize lcdStringSize = lcdCols + sizeof("");
+constexpr lcdDimention lcdRows = LcdRows2;
+constexpr timeMilliSeconds extendLcdBacklightTimeout = oneMinute;
+constexpr timeMilliSeconds lcdTimeoutPrintTime = oneSecond; 
 
-constexpr Pin outputSelectorPin = Pin18;
+constexpr Pin outputSelectorOutputAPin = Pin04;
+constexpr Pin outputSelectorOutputBPin = Pin05;
 
 constexpr guHwConfig <numberOfUserButtons, numberOfControlButtons> hwCfg {
   { { UserBtnId(0), Pin06 },
     { UserBtnId(1), Pin07 },
     { UserBtnId(2), Pin08 },
     { UserBtnId(3), Pin09 } },
+
   { { CtrlBtnId(0), Pin10 },
-    { CtrlBtnId(1), Pin16 } },
-};
-constexpr guProgramConfig<numberOfUserButtons, lcdStringSize> programsConfigs[numberOfPrograms] {
-  { ProgramId(0), { Note(36), Note(37), Note(38), Note(39) },"1/7  S8 ch. 1,2 ", "36 37 <\1\1> 38 39" },
-  { ProgramId(1), { Note(41), Note(42), Note(43), Note(44) },"2/7  S8 ch. 3,4 ", "41 42 <\1\1> 43 44" },
-  { ProgramId(2), { Note(45), Note(46), Note(38), Note(49) },"3/7  S8 ch. 5,6 ", "45 46 <\1\1> 48 49" },
-  { ProgramId(3), { Note(50), Note(51), Note(52), Note(53) },"4/7  S8 ch. 7,8 ", "50 51 <\1\1> 53 54" },
-  { ProgramId(4), { Stop(), Play(), Loop(), Record() }, "5/7  Transport  ", "Stp Pla Loop Rec" },
-  { ProgramId(5), { CC(21), CC(22), CC(23), CC(24) }, "6/7  CC 21 - 24 ", "21 22 <cc> 23 24" },
-  { ProgramId(6), { InputA(), NotUsed(), NotUsed(),InputB()},"7/7  A/B -> Out ", "\1A -- <\1\1> -- \1B" }
+    { CtrlBtnId(1), Pin16 },
+    { CtrlBtnId(2), Pin18 },
+    { CtrlBtnId(3), Pin19 },
+    { CtrlBtnId(4), Pin20 } },
 };
 
-guLcd lcd(lcdI2C, lcdDimentionY, lcdDimentionX); 
+constexpr guProgramConfig<numberOfUserButtons> programsConfigs[] {
+  { { Note(36), Note(37), Note(38), Note(39) },"S8 ch1,2"},
+  { { Note(41), Note(42), Note(43), Note(44) },"S8 ch3,4"},
+  { { Note(45), Note(46), Note(48), Note(49) },"S8 ch5,6"},
+  { { Note(50), Note(51), Note(52), Note(53) },"S8 ch7,8"},
+  { { Stop(), Play(), Loop(), Record() },      "Transprt"},
+  { { CC(21), CC(22), CC(23), CC(24) },        " Reaper "},
+  { { CC(80), CC(81), CC(82), CC(83) },        "BOSS 202"},
+  { { CC(80), CC(81), NotUsed(), CC(84) },       "BOSS 202"},
+  { { InputA(), NotUsed(), NotUsed(),InputB()},"A/B-> \1\1"}
+};
+
+constexpr byte numberOfPrograms = sizeof(programsConfigs)/sizeof(guProgramConfig<numberOfUserButtons>);
+
+guLcd lcd(lcdI2C, lcdRows, lcdCols); 
 guHwApi<numberOfUserButtons, numberOfControlButtons> hwApi(hwCfg);
 guProgramsCfg<numberOfPrograms, numberOfUserButtons, lcdStringSize> programs(programsConfigs);
-guJackSelector jackSelector(outputSelectorPin);
+guJackSelector jackSelector(outputSelectorOutputAPin, outputSelectorOutputBPin);
+MidiSender midiController;
 }
 
 void handleMidiEvent(const MidiValue& midi) {
-    if(midi.isNote()){ sendMidiToggle(midi); }
-    else{ sendMidiOnce(midi); }
+    if(midi.isNote()){ midiController.sendMidiToggle(midi); }
+    else{ midiController.sendMidiOffOnImpulse(midi); }
 }
 
 void handleUserEvent(const UserAction& user) {
-    lcd.printSecondLine(user.toString());
+    lcd.printWithTimeout(user.toString());
     if(user.value == UserAction::UserInputA) jackSelector.SelectA();
     if(user.value == UserAction::UserInputB) jackSelector.SelectB();
     EEPROM.update(eepromAddrOutputSelector, jackSelector.selectedInput); 
 }
 
 void handleUserButtonsEvent(AceButton* button, uint8_t eventType, uint8_t) {
-  lcd.extendLcdBacklight();
-  lcd.printWithDelay(programs.tooltip());
   const auto buttonId = button->getId();
   const auto currentAction = programs.getActionForButton(buttonId);
   const auto currentActionType = currentAction.type;
   if(eventType == AceButton::kEventPressed) {
+  lcd.extendLcdBacklight();
     if(currentActionType == Action::ActionTypeMidi) {
       handleMidiEvent(currentAction.mv);
     }
     else if(currentActionType == Action::ActionTypeUser){
       handleUserEvent(currentAction.uv);
     }
-    lcd.printSecondLine(currentAction.toString()); 
+    lcd.printWithTimeout(currentAction.toString()); 
+  }
+}
+
+void handleControlSwitch(CtrlBtnId id){
+  if(id == CtrlBtnId(2)){ 
+    lcd.toggleAlwaysOn();     
+  }
+  if(id == CtrlBtnId(3)){ 
+    lcd.toggleDisplay();
+    lcd.printProgram(programs.getCurrentProgram());     
   }
 }
 
 void handleControlButtonsEvent(AceButton* button, uint8_t eventType, uint8_t) {
   const auto ctrlBtnId = button->getId();
   if(eventType == AceButton::kEventPressed) {
+    if(ctrlBtnId > CtrlBtnId(1)) handleControlSwitch(ctrlBtnId);
     if(lcd.isBacklight()){
-      if(ctrlBtnId == CtrlBtnId(0)){ programs.prev(); lcd.printProgramChange(programs.header(), programs.tooltip());}
-      if(ctrlBtnId == CtrlBtnId(1)){ programs.next(); lcd.printProgramChange(programs.header(), programs.tooltip());}
-      EEPROM.update(eepromAddrLastProgram, programs.getProgram()); 
+      if(ctrlBtnId == CtrlBtnId(0)){ programs.prev(); lcd.printProgram(programs.getCurrentProgram());}
+      if(ctrlBtnId == CtrlBtnId(1)){ programs.next(); lcd.printProgram(programs.getCurrentProgram());}
+      EEPROM.update(eepromAddrLastProgram, programs.getProgramId()); 
     }else{
-      lcd.backlight();
       lcd.extendLcdBacklight();
     }
-    if(ctrlBtnId == CtrlBtnId(2)){ lcd.enableAlwaysOn(); }
-  }else if(eventType == AceButton::kEventReleased) {
-    if(ctrlBtnId == CtrlBtnId(2)){ lcd.disableAlwaysOn(); }
   }
 }
 
 void setup() {
   Serial.begin(serialBaud);
   lcd.init();
-  lcd.setExtendLcdBacklightMs(extendLcdBacklightTimeout);
-  lcd.setLcdRedrawTooltipAfterMs(lcdRedrawTooltipTimeout);
   hwApi.userButtonsEventHandler = handleUserButtonsEvent;
   hwApi.ctrlButtonsEventHandler = handleControlButtonsEvent;
   hwApi.init();
-  lcd.intro(__DATE__, __TIME__, ProductName, ProductVersion, numberOfUserButtons);
-  jackSelector.selectedInput= EEPROM.read(eepromAddrOutputSelector);
+
+  jackSelector.init();
+  lcd.intro(__DATE__, __TIME__, ProductName, ProductVersion, programs.toString() + " " + hwApi.toString());
+
+  jackSelector.Select(EEPROM.read(eepromAddrOutputSelector));
   programs.setProgram(EEPROM.read(eepromAddrLastProgram));
-  lcd.printProgramChange(programs.header(), programs.tooltip());
+  lcd.printProgram(programs.getCurrentProgram());
 }
 
 void loop() {

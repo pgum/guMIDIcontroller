@@ -1,12 +1,12 @@
-#ifndef guMIDI_H
-#define guMIDI_H
+#ifndef guMidi_H
+#define guMidi_H
 
 #include <stddef.h>
 #include <MIDIUSB.h>
 #include <Arduino.h>
 #include "guhelpers.h"
 
-constexpr byte Channel = 1;
+constexpr byte Channel = 16;
 constexpr byte On = 1;
 constexpr byte Off = 0;
 constexpr byte OnValue = 127;
@@ -20,14 +20,12 @@ struct MidiValue {
   const byte value;
   const bool isnote;
   const char* abbr;
+  
   constexpr bool isNote() const { return isnote; }
-  String toString() const { 
-    String representation_basic = "Midi " + String(value) +  (isNote() ?  " Note" : " CC  ");
-    if(value > 99) representation_basic += " ";
-    return( ((abbr != NULL) ? 
-              String(abbr) + " " + representation_basic : 
-              representation_basic + "          ") + String("          ") ); 
+  String toString() const {  
+    return abbr == NULL ? (isNote() ?  "\1" : "c") + String(value) : String(abbr);
   }
+
   constexpr midiEventPacket_t midiNoteOn(){ return { noteOnByte >> 4, noteOnByte | Channel, value, MaxVelocity }; }
   constexpr midiEventPacket_t midiNoteOff(){ return { noteOffByte >> 4, noteOffByte | Channel, value, MaxVelocity }; }
   constexpr midiEventPacket_t midiCc(byte v){ return { CcByte >> 4, CcByte | Channel, value, v}; }
@@ -41,17 +39,27 @@ constexpr MidiValue MidiNote(byte v) { return {v, true, NULL}; }
 constexpr MidiValue MidiCC(byte v) { return {v, false, NULL}; }
 constexpr MidiValue MidiTransport(byte v, const char* abbr4char) { return {v, false, abbr4char}; }
 
-void sendMidiOnce(const MidiValue& midi) {
-  MidiUSB.sendMIDI(midi.getPacket());
-  MidiUSB.flush();
-}
+struct MidiSender {
+  void sendMidiOnce(const MidiValue& midi) {
+    MidiUSB.sendMIDI(midi.getPacket());
+    MidiUSB.flush();
+  }
 
-void sendMidiToggle(const MidiValue& midi) {
-  MidiUSB.sendMIDI(midi.turnOnPacket());
-  MidiUSB.flush();
-  delay(1);
-  MidiUSB.sendMIDI(midi.turnOffPacket());
-  MidiUSB.flush();
-}
+  void sendMidiToggle(const MidiValue& midi) {
+    MidiUSB.sendMIDI(midi.turnOnPacket());
+    MidiUSB.flush();
+    delay(1);
+    MidiUSB.sendMIDI(midi.turnOffPacket());
+    MidiUSB.flush();
+  }
+
+  void sendMidiOffOnImpulse(const MidiValue& midi) {
+    MidiUSB.sendMIDI(midi.turnOffPacket());
+    MidiUSB.flush();
+    delay(20);
+    MidiUSB.sendMIDI(midi.turnOnPacket());
+    MidiUSB.flush();
+  }
+};
 
 #endif

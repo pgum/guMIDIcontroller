@@ -1,22 +1,30 @@
 #ifndef guJackSelector_H
 #define guJackSelector_H
+#include "guhelpers.h"
 
 struct guJackSelector {
-  const Pin relayPin;
-  constexpr static byte inputA = 0;
-  constexpr static byte inputB = 1;
-  byte selectedInput;
-  guJackSelector(Pin pin): relayPin(pin) {}
+  const Pin InputAPin;
+  const Pin InputBPin;
+  constexpr static InputId inputA = 0;
+  constexpr static InputId inputB = 1;
+  InputId selectedInput;
+  guJackSelector(Pin inA, Pin inB): InputAPin(inA), InputBPin(inB) {}
+  void Select(const InputId inputId){
+    inputId == inputA ? SelectA() : SelectB();
+  }
   void SelectA(){
-    Serial.println("digitalWrite(relayPin,LOW);");
+    digitalWrite(InputAPin,HIGH);
+    digitalWrite(InputBPin,LOW);
     selectedInput = inputA;
   }
   void SelectB(){
-    Serial.println("digitalWrite(relayPin,HIGH);");
+    digitalWrite(InputAPin,LOW);
+    digitalWrite(InputBPin,HIGH);
     selectedInput = inputB;
   }
   void init(){
-    pinMode(relayPin, OUTPUT);
+    pinMode(InputAPin, OUTPUT);
+    pinMode(InputBPin, OUTPUT);
   }
 };
 #endif
