@@ -40,9 +40,7 @@ constexpr guHwConfig <numberOfUserButtons, numberOfControlButtons> hwCfg {
 };
 
 using namespace Gu::Actions::Midi;
-//error: 'Programs' is not a namespace-name
-//error: expected namespace-name before ';' token
-using namespace Gu::Actions::Programs;
+using namespace Gu::Programs;
 //constexpr byte numberOfPrograms = 9; //sizeof(programsConfigs)/sizeof(guProgramConfig<numberOfUserButtons>);
 constexpr guProgramConfig<numberOfUserButtons> programsConfigs[] {
   { { Note(36), Note(37), Note(38), Note(39) }, "S8 ch1,2"},
