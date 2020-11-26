@@ -17,8 +17,12 @@ jobs:
     - uses: actions/checkout@v2
     - name: Install platform
       run: arduino-cli core update-index
-    - name: Show List of installed libraries on clear system
-      run: arduino-cli lib list
+    - name: Show List of installed libraries, and list of cores on clear system
+      run: |
+          arduino-cli lib list
+          arduino-cli core list
+    - name: Install arduino:avr core
+      run: arduino-cli core install arduino:avr
     - name: Install dependencies
       run: |
           arduino-cli lib install AceButton 
