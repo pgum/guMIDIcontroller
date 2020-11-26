@@ -20,7 +20,13 @@ jobs:
     - name: Show List of installed libraries on clear system
       run: arduino-cli lib list
     - name: Install dependencies
-      run: arduino-cli lib install AceButton Array EveryTimer LiquidCrystal_I2C MIDIUSB TimerOne 
+      run: |
+          arduino-cli lib install AceButton 
+          arduino-cli lib install Array 
+          arduino-cli lib install EveryTimer 
+          arduino-cli lib install MIDIUSB 
+          arduino-cli lib install TimerOne 
+          arduino-cli lib install "LiquidCrystal I2C"
     - name: Show List of installed libraries after installing dependencies
       run: arduino-cli lib list
     - name: Compile C++20
