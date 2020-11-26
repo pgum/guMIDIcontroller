@@ -13,7 +13,7 @@ template <byte numberOfUserButtons>
 struct guProgramConfig { 
   const Gu::Actions::Action actionsList[numberOfUserButtons];
   const char* programName;
-  operator String() const {
+  String toString() const {
     String boardRepresentationString;
     //TODO: nie da sie map'y jakoś? foreach?
     for(auto i= 0; i < numberOfUserButtons; ++i){
@@ -52,8 +52,8 @@ struct guProgramsCfg {
   String printProgramName() const {
     auto currentConfig= getCurrentProgram();
   String programNameRaw= String(currentConfig->programName) + emptyLine64Width;
-  String leftSideRaw= program->assignedAction[0].toString() + emptyLine5Width;
-  String rightSideRaw = emptyLine5Width + program->assignedAction[1].toString();
+  String leftSideRaw= currentConfig->assignedAction[0].toString() + emptyLine5Width;
+  String rightSideRaw = emptyLine5Width + currentConfig->assignedAction[1].toString();
   const byte sidesWidth =4;
   String programName= programNameRaw.substring(0,cols- (2*sidesWidth));
   String leftSide= leftSideRaw.substring(0, sidesWidth);
@@ -65,7 +65,7 @@ struct guProgramsCfg {
     auto currentConfig= getCurrentProgram();
     //error: could not convert 'currentConfig' from 'Gu::Programs::guProgramConfig<4>*' to 'String&&
     //ale ja chce użyc mojego operator String() z góry...
-    String lowerLine= String(currentConfig) + emptyLine64Width;
+    String lowerLine= currentConfig->toString() + emptyLine64Width;
     return lowerLine;
   }
   };
