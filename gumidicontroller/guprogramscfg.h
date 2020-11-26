@@ -33,7 +33,7 @@ struct guProgramsCfg {
   programId currentProgramId;
   byte eepromAddr;
   //warning: invalid conversion from 'const programConfig* {aka const Gu::Programs::guProgramConfig<4>*}' to 'Gu::Programs::guProgramsCfg<4>::programConfig* {aka Gu::Programs::guProgramConfig<4>*}' [-fpermissive]
-  guProgramsCfg(const programConfig* config= NULL):c(config) { currentProgramId= defaultProgram; numberOfPrograms= sizeof(config)/sizeof(guProgramConfig<numberOfUserButtons>)}
+  guProgramsCfg(const programConfig* config= NULL):c(config) { currentProgramId= defaultProgram; numberOfPrograms= sizeof(config)/sizeof(guProgramConfig<numberOfUserButtons>); }
   void loadConfig(const programConfig* config){ c= config; }
   Gu::Actions::Action triggerAction(BtnId buttonId) const {  (c[currentProgramId].actionsList[buttonId].callback)(); }
   void setProgram(programId programNumber) { currentProgramId = programNumber % numberOfPrograms; }
