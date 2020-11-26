@@ -52,7 +52,7 @@ struct guProgramsCfg {
   String printProgramName() const {
     auto currentConfig= getCurrentProgram();
     String programNameRaw= String(currentConfig->programName);
-    return String(getProgramId()-1 % numberOfPrograms) + "  " + programNameRaw + "  " + String(getProgramId()+1 % numberOfPrograms);
+    return String("\2"+getProgramId()-1 % numberOfPrograms) + "  " + programNameRaw + "  " + String(getProgramId()+1 % numberOfPrograms)+String("\3");
   }
   String printProgramDescription() const {
     auto currentConfig= getCurrentProgram();
