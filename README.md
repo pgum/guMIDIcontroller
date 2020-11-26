@@ -28,7 +28,6 @@ Code is used in "production" (made one copy of device, and it work :) ).
 
 Feel free to modify and use as defined by GNU GPL3, it would be awesome if you can give me a notice that you use this - it's always nice to know that this helped someone :)
 
-
-clear; ./arduino-cli compile --fqbn arduino:avr:leonardo --verify --warnings all 
+clear; ./arduino-cli compile --fqbn arduino:avr:leonardo --verify --warnings all --build-properties std=c++1z
 
 clear; ./arduino-cli upload --fqbn arduino:avr:leonardo --port COM5
