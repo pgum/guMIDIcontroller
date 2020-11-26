@@ -15,15 +15,15 @@ jobs:
     - name: Install Arduino CLI
       uses: arduino/setup-arduino-cli@v1.1.1
     - uses: actions/checkout@v2
-    - name: Install platform
-      run: arduino-cli core update-index
-    - name: Show List of installed libraries, and list of cores on clear system
+    - name: Info: Show list of installed libraries, and list of cores on clear system
       run: |
           arduino-cli lib list
           arduino-cli core list
-    - name: Install arduino:avr core
-      run: arduino-cli core install arduino:avr
-    - name: Install dependencies
+    - name: Install Platform
+     run: |
+          arduino-cli core update-index
+          arduino-cli core install arduino:avr
+    - name: Install Libraries
       run: |
           arduino-cli lib install AceButton 
           arduino-cli lib install Array 
@@ -31,8 +31,10 @@ jobs:
           arduino-cli lib install MIDIUSB 
           arduino-cli lib install TimerOne 
           arduino-cli lib install "LiquidCrystal I2C"
-    - name: Show List of installed libraries after installing dependencies
-      run: arduino-cli lib list
+    - name: Info: Show list of installed libraries after installing platform and libraries
+      run: | 
+          arduino-cli lib list
+          arduino-cli core list
     - name: Compile C++20
       run: |
           cd gumidicontroller
