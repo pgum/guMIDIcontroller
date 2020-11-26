@@ -15,12 +15,12 @@ jobs:
     - name: Install Arduino CLI
       uses: arduino/setup-arduino-cli@v1.1.1
     - uses: actions/checkout@v2
-    - name: Info: Show list of installed libraries, and list of cores on clear system
+    - name: Show list of installed libraries, and list of cores on clear system
       run: |
           arduino-cli lib list
           arduino-cli core list
     - name: Install Platform
-     run: |
+      run: |
           arduino-cli core update-index
           arduino-cli core install arduino:avr
     - name: Install Libraries
@@ -31,7 +31,7 @@ jobs:
           arduino-cli lib install MIDIUSB 
           arduino-cli lib install TimerOne 
           arduino-cli lib install "LiquidCrystal I2C"
-    - name: Info: Show list of installed libraries after installing platform and libraries
+    - name: Show list of installed libraries after installing platform and libraries
       run: | 
           arduino-cli lib list
           arduino-cli core list
