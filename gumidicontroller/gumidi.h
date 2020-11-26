@@ -49,9 +49,9 @@ struct MidiValue {
   constexpr midiEventPacket_t turnOffPacket(){ return isnote ? midiNoteOff() : midiCc(OffValue); }
 };
 template<byte value>
-constexpr MidiValue MidiNote() { return {true}; }
+constexpr MidiValue<value> MidiNote() { return {true}; }
 template<byte value>
-constexpr MidiValue MidiCC() { return {false}; }
+constexpr MidiValue<value> MidiCC() { return {false}; }
 } //namespace Gu::Midi
 
 namespace Gu::Actions::Midi {

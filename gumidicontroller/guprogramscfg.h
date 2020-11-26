@@ -13,11 +13,11 @@ template <byte numberOfUserButtons>
 struct guProgramConfig { 
   const Gu::Actions::Action actionsList[numberOfUserButtons];
   const char* programName;
-  String toString() const {
+  String toString() {
     String boardRepresentationString;
     //TODO: nie da sie map'y jakoś? foreach?
     for(auto i= 0; i < numberOfUserButtons; ++i){
-      boardRepresentationString+= actionsList[i] + " ";
+      boardRepresentationString+= actionsList[i].toString() + " ";
     }
     return boardRepresentationString;
   }
@@ -32,7 +32,7 @@ struct guProgramsCfg {
   uint8_t numberOfPrograms;
   programId currentProgramId;
   byte eepromAddr;
-
+  //warning: invalid conversion from 'const programConfig* {aka const Gu::Programs::guProgramConfig<4>*}' to 'Gu::Programs::guProgramsCfg<4>::programConfig* {aka Gu::Programs::guProgramConfig<4>*}' [-fpermissive]
   guProgramsCfg(const programConfig* config= NULL):c(config) { currentProgramId= defaultProgram; numberOfPrograms= sizeof(config)/sizeof(guProgramConfig<numberOfUserButtons>)}
   void loadConfig(const programConfig* config){ c= config; }
   Gu::Actions::Action triggerAction(BtnId buttonId) const {  (c[currentProgramId].actionsList[buttonId].callback)(); }
@@ -51,15 +51,8 @@ struct guProgramsCfg {
   }
   String printProgramName() const {
     auto currentConfig= getCurrentProgram();
-  String programNameRaw= String(currentConfig->programName) + emptyLine64Width;
-  String leftSideRaw= currentConfig->assignedAction[0].toString() + emptyLine5Width;
-  String rightSideRaw = emptyLine5Width + currentConfig->assignedAction[1].toString();
-  const byte sidesWidth =4;
-  String programName= programNameRaw.substring(0,cols- (2*sidesWidth));
-  String leftSide= leftSideRaw.substring(0, sidesWidth);
-  String rightSide= rightSideRaw.substring(rightSideRaw.length()-sidesWidth);
-  String upperLine= leftSide + programName + rightSide;
-  return upperLine;
+    String programNameRaw= String(currentConfig->programName);
+    return String(getProgramId()-1 % numberOfPrograms) + "  " + programNameRaw + "  " + String(getProgramId()+1 % numberOfPrograms);
   }
   String printProgramDescription() const {
     auto currentConfig= getCurrentProgram();

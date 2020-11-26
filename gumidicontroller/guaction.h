@@ -2,6 +2,7 @@
 #define guAction_H
 //#include <functional>
 //#include <utility>
+#include <Arduino.h>
 
 namespace Gu::Actions {
 using Callback = void *();
@@ -10,7 +11,8 @@ using Callback = void *();
 struct Action { 
   Callback callback;
   const char* name;
-  operator String(){ return name; }
+  //TODO: jakbym to chciał przerobić na operator String(...){}? to jak?
+  String toString(){ return String(name); }
 };
 
 //error: could not convert '{<lambda closure object>Gu::Actions::None()::<lambda()>{}, "---"}' from '<brace-enclosed initializer list>' to 'Gu::Actions::Action'

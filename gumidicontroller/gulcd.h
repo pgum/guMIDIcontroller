@@ -43,13 +43,13 @@ class guLcd {
   void restoreLine(lcdRowIndex line = secondLine);
   void extendLcdBacklight(timeMilliSeconds timeMs = oneMinute);
   void update();
+  void printBothLines(const String& first, const String& second, timeMilliSeconds duration = 0);
   
   private:
   String prepareLineToPrint(const String& source);
   void updateTimeoutPrint(timeMilliSeconds now);
   void updateBacklight(timeMilliSeconds now);
   void printWithProgramHalt(const String& first, const String& second, timeMilliSeconds duration = twoSeconds);
-  void printBothLines(const String& first, const String& second, timeMilliSeconds duration = 0);
   timeMilliSeconds lcdBacklightTime;
   timeMilliSeconds lcdTimeoutPrintTime;
   bool alwaysOn;
