@@ -1,0 +1,19 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ master, experimental ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Install Arduino CLI
+      uses: arduino/setup-arduino-cli@v1.1.1
+    - uses: actions/checkout@v2
+    - name: Compile C++20
+      run: ./arduino-cli compile --fqbn arduino:avr:leonardo --verify --warnings all --build-properties std=c++1z
