@@ -16,9 +16,7 @@ jobs:
       uses: arduino/setup-arduino-cli@v1.1.1
     - uses: actions/checkout@v2
     - name: Install platform
-      run: |
-          arduino-cli core update-index
-          arduino-cli core install arduino:avr:leonardo
+      run: arduino-cli core update-index
     - name: Show List of installed libraries on clear system
       run: arduino-cli lib list
     - name: Install dependencies
