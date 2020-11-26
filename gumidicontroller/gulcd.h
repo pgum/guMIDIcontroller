@@ -5,6 +5,9 @@
 #include <LiquidCrystal_I2C.h>
 #include "guhelpers.h"
 #include "guprogramscfg.h"
+#include "guaction.h"
+
+namespace Gu::Lcd {
 
 using stringLength = byte;
 using i2cAddress = byte;
@@ -40,13 +43,13 @@ class guLcd {
   void restoreLine(lcdRowIndex line = secondLine);
   void extendLcdBacklight(timeMilliSeconds timeMs = oneMinute);
   void update();
-  void printProgram(const guProgramConfig<4>* program);
   
   private:
   String prepareLineToPrint(const String& source);
   void updateTimeoutPrint(timeMilliSeconds now);
   void updateBacklight(timeMilliSeconds now);
   void printWithProgramHalt(const String& first, const String& second, timeMilliSeconds duration = twoSeconds);
+  void printBothLines(const String& first, const String& second, timeMilliSeconds duration = 0);
   timeMilliSeconds lcdBacklightTime;
   timeMilliSeconds lcdTimeoutPrintTime;
   bool alwaysOn;
@@ -55,5 +58,15 @@ class guLcd {
   LiquidCrystal_I2C lcd;
   lcdDimention rows, cols;
 };
-
+} // namespace Gu::Lcd
+/*
+//TODO: TO nie działa
+namespace Gu::Actions::Lcd {
+  constexpr Action EnableAlwaysOn(const Gu::Lcd::guLcd& lcd) { return { [=](){ lcd.enableAlwaysOn(); }, "LAE" }; };
+  constexpr Action DisableAlwaysOn(const Gu::Lcd::guLcd& lcd) { return { [=](){ lcd.disableAlwaysOn(); }, "LAD" }; };
+  constexpr Action ToggleAlwaysOn(const Gu::Lcd::guLcd& lcd) { return { [=](){ lcd.toggleAlwaysOn(); }, "LAT" }; };
+  constexpr Action print2ndLineWithTimeout(const Gu::Lcd::guLcd& lcd, const String& text) { return { [=](){ lcd.print(text); }, "LPT" }; };
+  constexpr Action ExtendLcdBacklight(const Gu::Lcd::guLcd& lcd, timeMilliSeconds timeMs = oneMinute) { return { [=](){ lcd.extendLcdBacklight(timeMs); }, "LEB" }; };
+}
+*/
 #endif

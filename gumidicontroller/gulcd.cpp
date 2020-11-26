@@ -1,5 +1,7 @@
 #include "gulcd.h"
 
+namespace Gu::Lcd {
+
 guLcd::guLcd(i2cAddress i2cAddr, lcdDimention rows, lcdDimention cols): lcd(i2cAddr, rows, cols), rows(rows), cols(cols) {};
 
 constexpr uint8_t customCharacterMusicNote[] = { 0x08, 0x0C, 0x0E, 0x0B, 0x09, 0x19, 0x1B, 0x03 };
@@ -22,12 +24,17 @@ void guLcd::print(const String& text, lcdRowIndex line, timeMilliSeconds duratio
   if( duration == 0 ){
       lastPermanentLine[line] = text;
   }
+    extendLcdBacklight();
 }
 
 void guLcd::printWithTimeout(const String& text, timeMilliSeconds duration, lcdRowIndex line) {
   print(text, line, duration);
 }
 
+void guLcd::printBothLines(const String& first, const String& second, timeMilliSeconds duration) {
+  print(first, firstLine, duration);
+  print(second, secondLine, duration);
+}
 void guLcd::printWithProgramHalt(const String& first, const String& second, timeMilliSeconds duration) {
   print(first, firstLine);
   print(second, secondLine);
@@ -48,31 +55,6 @@ void guLcd::intro(const String& date, const String& time, const String& name, co
   lcd.clear();
 }
 
-void guLcd::printProgram(const guProgramConfig<4>* program) {
-    const String emptyLine5Width= String("     ");
-    const String emptyLine64Width= String("                                                                ");
-    
-    String programNameRaw= String(program->programName) + emptyLine64Width;
-    String leftSideRaw= program->assignedAction[0].toString() + emptyLine5Width;
-    String rightSideRaw = emptyLine5Width + program->assignedAction[3].toString();
-    
-    const byte sidesWidth =4;
-    String programName= programNameRaw.substring(0,cols- (2*sidesWidth));
-    String leftSide= leftSideRaw.substring(0, sidesWidth);
-    String rightSide= rightSideRaw.substring(rightSideRaw.length()-sidesWidth);
-    String upperLine= leftSide + programName + rightSide;
-    
-    String lowerLeftSideRaw= String("  ") + program->assignedAction[1].toString() + emptyLine64Width;
-    String lowerRightSideRaw= emptyLine64Width + program->assignedAction[2].toString() + String("  ");
-    String lowerLeftSide = lowerLeftSideRaw.substring(0,cols/2);
-    String lowerRightSide = lowerRightSideRaw.substring(lowerRightSideRaw.length()- (cols/2));
-    String lowerLine= lowerLeftSide + lowerRightSide;
-  print(upperLine, firstLine);
-  print(lowerLine, secondLine);
-  extendLcdBacklight();
-}
-
-
 void guLcd::extendLcdBacklight(timeMilliSeconds duration) {
   auto newTime = millis() + duration;
   lcdBacklightTime = lcdBacklightTime < newTime ? newTime : lcdBacklightTime;
@@ -90,6 +72,7 @@ void guLcd::updateBacklight(timeMilliSeconds now){
       display();
       backlight();
     }else{
+      //error: 'noBacklight' was not declared in this scope
       noBacklight();
       noDisplay();
       lcdBacklightTime = 0;
@@ -124,3 +107,5 @@ void guLcd::noDisplay() { lcd.noBacklight(); lcd.noDisplay(); isdisplay = false;
 void guLcd::toggleAlwaysOn(){ alwaysOn ? disableAlwaysOn() : enableAlwaysOn(); }
 void guLcd::enableAlwaysOn(){ alwaysOn = true; isbacklight = true; printWithTimeout("LCD Always On   ", oneSecond ); }
 void guLcd::disableAlwaysOn(){ alwaysOn = false; printWithTimeout("LCD has timeout ", oneSecond); }
+
+}

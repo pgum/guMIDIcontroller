@@ -5,7 +5,9 @@
 #include <MIDIUSB.h>
 #include <Arduino.h>
 #include "guhelpers.h"
+#include "guaction.h"
 
+namespace Gu::Midi {
 constexpr byte Channel = 16;
 constexpr byte On = 1;
 constexpr byte Off = 0;
@@ -16,50 +18,52 @@ constexpr byte noteOnByte = 0x90;
 constexpr byte noteOffByte = 0x80;
 constexpr byte CcByte = 0xB0;
 
+template<byte value>
 struct MidiValue {
-  const byte value;
   const bool isnote;
-  const char* abbr;
-  
   constexpr bool isNote() const { return isnote; }
-  String toString() const {  
-    return abbr == NULL ? (isNote() ?  "\1" : "c") + String(value) : String(abbr);
+  void sendMidiOnce() const {
+    MidiUSB.sendMIDI(getPacket());
+    MidiUSB.flush();
+  }
+  void sendMidiToggle() const {
+    MidiUSB.sendMIDI(turnOnPacket());
+    MidiUSB.flush();
+    delay(1);
+    MidiUSB.sendMIDI(turnOffPacket());
+    MidiUSB.flush();
+  }
+  void sendMidiOffOnImpulse() const {
+    MidiUSB.sendMIDI(turnOffPacket());
+    MidiUSB.flush();
+    delay(20);
+    MidiUSB.sendMIDI(turnOnPacket());
+    MidiUSB.flush();
   }
 
   constexpr midiEventPacket_t midiNoteOn(){ return { noteOnByte >> 4, noteOnByte | Channel, value, MaxVelocity }; }
   constexpr midiEventPacket_t midiNoteOff(){ return { noteOffByte >> 4, noteOffByte | Channel, value, MaxVelocity }; }
-  constexpr midiEventPacket_t midiCc(byte v){ return { CcByte >> 4, CcByte | Channel, value, v}; }
+  constexpr midiEventPacket_t midiCc(byte cc_value){ return { CcByte >> 4, CcByte | Channel, value, cc_value}; }
   constexpr midiEventPacket_t getPacket(byte isOn = On){ return isOn == On ? turnOnPacket() : turnOffPacket(); }
   constexpr midiEventPacket_t turnOnPacket(){ return isnote ? midiNoteOn() : midiCc(OnValue); }
   constexpr midiEventPacket_t turnOffPacket(){ return isnote ? midiNoteOff() : midiCc(OffValue); }
 };
+template<byte value>
+constexpr MidiValue MidiNote() { return {true}; }
+template<byte value>
+constexpr MidiValue MidiCC() { return {false}; }
+} //namespace Gu::Midi
 
-constexpr MidiValue MidiNone() { return {0, false, NULL}; }
-constexpr MidiValue MidiNote(byte v) { return {v, true, NULL}; }
-constexpr MidiValue MidiCC(byte v) { return {v, false, NULL}; }
-constexpr MidiValue MidiTransport(byte v, const char* abbr4char) { return {v, false, abbr4char}; }
-
-struct MidiSender {
-  void sendMidiOnce(const MidiValue& midi) {
-    MidiUSB.sendMIDI(midi.getPacket());
-    MidiUSB.flush();
-  }
-
-  void sendMidiToggle(const MidiValue& midi) {
-    MidiUSB.sendMIDI(midi.turnOnPacket());
-    MidiUSB.flush();
-    delay(1);
-    MidiUSB.sendMIDI(midi.turnOffPacket());
-    MidiUSB.flush();
-  }
-
-  void sendMidiOffOnImpulse(const MidiValue& midi) {
-    MidiUSB.sendMIDI(midi.turnOffPacket());
-    MidiUSB.flush();
-    delay(20);
-    MidiUSB.sendMIDI(midi.turnOnPacket());
-    MidiUSB.flush();
-  }
-};
+namespace Gu::Actions::Midi {
+  constexpr Action Note(byte v) {  return { [](){ Gu::Midi::MidiNote<v> midi; midi.sendMidiToggle(); }, "\1"+String(v) }; };
+  constexpr Action CC(byte v) {    return { [](){ Gu::Midi::MidiCC<v> midi; midi.sendMidiOffOnImpulse();}, "c"+String(v) }; };
+  constexpr Action Rewind() {      return { [](){ Gu::Midi::MidiCC<116> midi); midi.sendMidiOnce();}, "Rew" }; };
+  constexpr Action FastForward() { return { [](){ Gu::Midi::MidiCC<117> midi); midi.sendMidiOnce();}, "FFw" }; };
+  constexpr Action Stop() {        return { [](){ Gu::Midi::MidiCC<118> midi; midi.sendMidiOnce();}, "Stp" }; };
+  constexpr Action Play() {        return { [](){ Gu::Midi::MidiCC<119> midi; midi.sendMidiOnce();}, "Pla" }; };
+  //error: 'MidiCC' is not a member of 'Gu::Midi'
+  constexpr Action Loop() {        return { [](){ Gu::Midi::MidiCC<115> midi; midi.sendMidiOnce();}, "Lop" }; };
+  constexpr Action Record() {      return { [](){ Gu::Midi::MidiCC<114> midi; midi.sendMidiOnce();}, "Rec" }; };
+}
 
 #endif

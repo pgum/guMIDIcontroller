@@ -45,8 +45,8 @@ class guHwApi {
     for( auto &b : userButtons) b.check();
     for( auto &b : ctrlButtons) b.check();
   }
-  String toString() const {
-    return "u" + String(numberOfUserButtons) + " c" + String(numberOfControlButtons);
+  String signature() const {
+    return String(numberOfUserButtons) + "us " + String(numberOfControlButtons) + "ct";
   }
   private:
     void initUserPins() {
