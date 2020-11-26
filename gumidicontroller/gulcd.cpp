@@ -5,9 +5,13 @@ namespace Gu::Lcd {
 guLcd::guLcd(i2cAddress i2cAddr, lcdDimention rows, lcdDimention cols): lcd(i2cAddr, rows, cols), rows(rows), cols(cols) {};
 
 constexpr uint8_t customCharacterMusicNote[] = { 0x08, 0x0C, 0x0E, 0x0B, 0x09, 0x19, 0x1B, 0x03 };
+constexpr uint8_t customCharacterArrowUp[] = { 0x04, 0x0E, 0x1F, 0x0E, 0x0E, 0x0E, 0x0E, 0x0E };
+constexpr uint8_t customCharacterArrowDown[] = { 0x0E, 0x0E, 0x0E, 0x0E, 0x0E, 0x1F, 0x0E, 0x04 };
 void guLcd::init(){
   lcd.init();
   lcd.createChar(1, customCharacterMusicNote);
+  lcd.createChar(2, customCharacterArrowUp);
+  lcd.createChar(3, customCharacterArrowDown);
   lcd.clear();
   noBacklight();
   delay(halfSecond);
