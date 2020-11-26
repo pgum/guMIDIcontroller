@@ -5,7 +5,7 @@
 struct guJackSelector {
   const Pin InputAPin;
   const Pin InputBPin;
-  const byte eepromAddress;
+  const eepromAddress eepromAddress;
   constexpr static InputId inputA = 0;
   constexpr static InputId inputB = 1;
   constexpr static InputId inputNone = 125;

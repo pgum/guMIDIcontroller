@@ -13,9 +13,9 @@ constexpr eepromAddress eepromAddrOutputSelector = 1;
 
 constexpr SerialBaudRate serialBaud = 115200;
 constexpr Gu::Lcd::i2cAddress lcdI2C = 0x27;
-constexpr Gu::Lcd::lcdDimention lcdCols = LcdCols16;
+constexpr Gu::Lcd::lcdDimention lcdCols = Gu::Lcd::LcdCols16;
 constexpr Gu::Lcd::stringBufferSize lcdStringSize = lcdCols + sizeof("");
-constexpr Gu::Lcd::lcdDimention lcdRows = LcdRows2;
+constexpr Gu::Lcd::lcdDimention lcdRows = Gu::Lcd::LcdRows2;
 constexpr timeMilliSeconds extendLcdBacklightTimeout = oneMinute;
 constexpr timeMilliSeconds lcdTimeoutPrintTime = oneSecond; 
 
