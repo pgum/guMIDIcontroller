@@ -1,6 +1,6 @@
 #include <EEPROM.h>
 #include <AceButton.h>
-#include <ButtonConfig.h>
+//#include <ButtonConfig.h>
 #include "guprogramscfg.h"
 #include "guhelpers.h"
 #include "gumidi.h"
