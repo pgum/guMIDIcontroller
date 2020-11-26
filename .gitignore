@@ -2,3 +2,7 @@
 *.obj
 *.hex
 *.sh
+*.exe
+*.eep
+*.elf
+*.bin
