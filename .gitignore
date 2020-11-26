@@ -6,4 +6,5 @@
 *.eep
 *.elf
 *.bin
+*.lnk
 .vscode/
