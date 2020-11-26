@@ -1,5 +1,8 @@
 #ifndef guOptions_H
 #define guOptions_H
+#include "guhelpers.h"
+#include "gumidi.h"
+#include "gulcd.h"
 
 namespace Gu::Options {
 
@@ -37,6 +40,8 @@ constexpr guHwConfig <numberOfUserButtons, numberOfControlButtons> hwCfg {
 };
 
 using namespace Gu::Actions::Midi;
+//error: 'Programs' is not a namespace-name
+//error: expected namespace-name before ';' token
 using namespace Gu::Actions::Programs;
 //constexpr byte numberOfPrograms = 9; //sizeof(programsConfigs)/sizeof(guProgramConfig<numberOfUserButtons>);
 constexpr guProgramConfig<numberOfUserButtons> programsConfigs[] {
