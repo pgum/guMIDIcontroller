@@ -15,5 +15,15 @@ jobs:
     - name: Install Arduino CLI
       uses: arduino/setup-arduino-cli@v1.1.1
     - uses: actions/checkout@v2
+    - name: Install platform
+      run: |
+          arduino-cli core update-index
+          arduino-cli core install arduino:avr:leonardo
+    - name: Show List of installed libraries on clear system
+      run: arduino-cli lib list
+    - name: Install dependencies
+      run: arduino-cli lib install AceButton Array EveryTimer LiquidCrystal_I2C MIDIUSB TimerOne 
+    - name: Show List of installed libraries after installing dependencies
+      run: arduino-cli lib list
     - name: Compile C++20
-      run: ./arduino-cli compile --fqbn arduino:avr:leonardo --verify --warnings all --build-properties std=c++1z
+      run: arduino-cli compile --fqbn arduino:avr:leonardo --verify --warnings all --build-properties std=c++1z
