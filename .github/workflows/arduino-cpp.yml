@@ -30,4 +30,6 @@ jobs:
     - name: Show List of installed libraries after installing dependencies
       run: arduino-cli lib list
     - name: Compile C++20
-      run: arduino-cli compile --fqbn arduino:avr:leonardo --verify --warnings all --build-properties std=c++1z
+      run: |
+          cd gumidicontroller
+          arduino-cli compile --fqbn arduino:avr:leonardo --verify --warnings all --build-properties std=c++1z
