@@ -42,6 +42,9 @@ constexpr guHwConfig <numberOfUserButtons, numberOfControlButtons> hwCfg {
 using namespace Gu::Actions::Midi;
 using namespace Gu::Programs;
 //constexpr byte numberOfPrograms = 9; //sizeof(programsConfigs)/sizeof(guProgramConfig<numberOfUserButtons>);
+
+//error: 'constexpr Gu::Actions::Action Gu::Actions::Midi::CC(byte)' called in a constant expression
+//error: 'constexpr Gu::Actions::Action Gu::Actions::Midi::CC(byte)' called in a constant expression
 constexpr guProgramConfig<numberOfUserButtons> programsConfigs[] {
   { { Note(36), Note(37), Note(38), Note(39) }, "S8 ch1,2"},
   { { Note(41), Note(42), Note(43), Note(44) }, "S8 ch3,4"},
