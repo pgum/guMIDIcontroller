@@ -39,18 +39,18 @@ constexpr MidiPacket MidiNote(midiValue value) { return {true, value}; }
 constexpr MidiPacket MidiCC(midiValue value) { return {false, value}; }
 
 struct MidiSender {
-  static void sendMidiOnce(MidiPacket midi) const {
+  static void sendMidiOnce(MidiPacket midi) {
     MidiUSB.sendMIDI(midi.getPacket());
     MidiUSB.flush();
   }
-  static void sendMidiToggle(MidiPacket midi) const {
+  static void sendMidiToggle(MidiPacket midi) {
     MidiUSB.sendMIDI(midi.turnOnPacket());
     MidiUSB.flush();
     delay(1);
     MidiUSB.sendMIDI(midi.turnOffPacket());
     MidiUSB.flush();
   }
-  static void sendMidiOffOnImpulse(MidiPacket midi) const {
+  static void sendMidiOffOnImpulse(MidiPacket midi) {
     MidiUSB.sendMIDI(midi.turnOffPacket());
     MidiUSB.flush();
     delay(20);
@@ -65,14 +65,15 @@ namespace Gu::Actions::Midi {
   //note: the lambda has no capture-default
   //error: 'midi' was not declared in this scope
   //error: could not convert '{<lambda closure object>Gu::Actions::Midi::Note(byte)::<lambda()>{}, operator+(StringSumHelper(((const char*)"\001")), String(v, 10))}' from '<brace-enclosed initializer list>' to 'Gu::Actions::Action'
-  Action Note(byte v) {  return { [&](){ auto midi= Gu::Midi::MidiNote(v); MidiSender::sendMidiToggle(midi); }, "\1"+String(v) }; };
-  Action CC(byte v) {    return { [&](){ auto midi= Gu::Midi::MidiCC(v); MidiSender::sendMidiOffOnImpulse(midi);}, "c"+String(v) }; };
-  Action Rewind() {      return { [&](){ auto midi= Gu::Midi::MidiCC(116); MidiSender::sendMidiOnce(midi);}, "Rew" }; };
-  Action FastForward() { return { [&](){ auto midi= Gu::Midi::MidiCC(117); MidiSender::sendMidiOnce(midi);}, "FFw" }; };
-  Action Stop() {        return { [&](){ auto midi= Gu::Midi::MidiCC(118); MidiSender::sendMidiOnce(midi);}, "Stp" }; };
-  Action Play() {        return { [&](){ auto midi= Gu::Midi::MidiCC(119); MidiSender::sendMidiOnce(midi);}, "Pla" }; };
-  Action Loop() {        return { [&](){ Gu::Midi::MidiCC<115> midi; MidiSender::sendMidiOnce(midi);}, "Lop" }; };
-  Action Record() {      return { [&](){ Gu::Midi::MidiCC<114> midi; MidiSender::sendMidiOnce(midi);}, "Rec" }; };
+  using namespace Gu::Midi;
+  Action Note(byte v) {  return { [&](){ auto midi= MidiNote(v); MidiSender::sendMidiToggle(midi); }, "\1"+String(v) }; };
+  Action CC(byte v) {    return { [&](){ auto midi= MidiCC(v); MidiSender::sendMidiOffOnImpulse(midi);}, "c"+String(v) }; };
+  Action Rewind() {      return { [&](){ auto midi= MidiCC(116); MidiSender::sendMidiOnce(midi);}, "Rew" }; };
+  Action FastForward() { return { [&](){ auto midi= MidiCC(117); MidiSender::sendMidiOnce(midi);}, "FFw" }; };
+  Action Stop() {        return { [&](){ auto midi= MidiCC(118); MidiSender::sendMidiOnce(midi);}, "Stp" }; };
+  Action Play() {        return { [&](){ auto midi= MidiCC(119); MidiSender::sendMidiOnce(midi);}, "Pla" }; };
+  Action Loop() {        return { [&](){ MidiCC<115> midi; MidiSender::sendMidiOnce(midi);}, "Lop" }; };
+  Action Record() {      return { [&](){ MidiCC<114> midi; MidiSender::sendMidiOnce(midi);}, "Rec" }; };
 }
 
 #endif
