@@ -23,7 +23,7 @@ struct Action {
 
 //error: could not convert '{<lambda closure object>Gu::Actions::None()::<lambda()>{}, "---"}' from '<brace-enclosed initializer list>' to 'Gu::Actions::Action'
 //error: body of constexpr function 'constexpr Gu::Actions::Action Gu::Actions::None()' not a return-statement
-constexpr Action None() { return { [](){ NULL; }, "---" }; };
+Action None() { return { [](){ NULL; }, "---" }; };
 
 }
 #endif
