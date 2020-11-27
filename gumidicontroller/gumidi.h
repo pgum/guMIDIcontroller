@@ -22,28 +22,10 @@ constexpr byte noteOnByte = 0x90;
 constexpr byte noteOffByte = 0x80;
 constexpr byte CcByte = 0xB0;
 
-template<byte value>
 struct MidiValue {
   const bool isnote;
+  byte value;
   constexpr bool isNote() const { return isnote; }
-  void sendMidiOnce() const {
-    MidiUSB.sendMIDI(getPacket());
-    MidiUSB.flush();
-  }
-  void sendMidiToggle() const {
-    MidiUSB.sendMIDI(turnOnPacket());
-    MidiUSB.flush();
-    delay(1);
-    MidiUSB.sendMIDI(turnOffPacket());
-    MidiUSB.flush();
-  }
-  void sendMidiOffOnImpulse() const {
-    MidiUSB.sendMIDI(turnOffPacket());
-    MidiUSB.flush();
-    delay(20);
-    MidiUSB.sendMIDI(turnOnPacket());
-    MidiUSB.flush();
-  }
 
   constexpr midiEventPacket_t midiNoteOn(){ return { noteOnByte >> 4, noteOnByte | Channel, value, MaxVelocity }; }
   constexpr midiEventPacket_t midiNoteOff(){ return { noteOffByte >> 4, noteOffByte | Channel, value, MaxVelocity }; }
@@ -52,10 +34,29 @@ struct MidiValue {
   constexpr midiEventPacket_t turnOnPacket(){ return isnote ? midiNoteOn() : midiCc(OnValue); }
   constexpr midiEventPacket_t turnOffPacket(){ return isnote ? midiNoteOff() : midiCc(OffValue); }
 };
-template<byte value>
-constexpr MidiValue<value> MidiNote() { return {true}; }
-template<byte value>
-constexpr MidiValue<value> MidiCC() { return {false}; }
+constexpr MidiValue MidiNote(value) { return {true}; }
+constexpr MidiValue MidiCC(value) { return {false}; }
+
+struct MidiSender {
+  static void sendMidiOnce(MidiValue midi) const {
+    MidiUSB.sendMIDI(midi.getPacket());
+    MidiUSB.flush();
+  }
+  static void sendMidiToggle(MidiValue midi) const {
+    MidiUSB.sendMIDI(midi.turnOnPacket());
+    MidiUSB.flush();
+    delay(1);
+    MidiUSB.sendMIDI(midi.turnOffPacket());
+    MidiUSB.flush();
+  }
+  static void sendMidiOffOnImpulse(MidiValue midi) const {
+    MidiUSB.sendMIDI(midi.turnOffPacket());
+    MidiUSB.flush();
+    delay(20);
+    MidiUSB.sendMIDI(midi.turnOnPacket());
+    MidiUSB.flush();
+  }
+}
 } //namespace Gu::Midi
 
 namespace Gu::Actions::Midi {
@@ -63,15 +64,15 @@ namespace Gu::Actions::Midi {
   //note: the lambda has no capture-default
   //error: 'midi' was not declared in this scope
   //error: could not convert '{<lambda closure object>Gu::Actions::Midi::Note(byte)::<lambda()>{}, operator+(StringSumHelper(((const char*)"\001")), String(v, 10))}' from '<brace-enclosed initializer list>' to 'Gu::Actions::Action'
-  constexpr Action Note(byte v) {  return { [](){ Gu::Midi::MidiNote<v> midi; midi.sendMidiToggle(); }, "\1"+String(v) }; };
-  constexpr Action CC(byte v) {    return { [](){ Gu::Midi::MidiCC<v> midi; midi.sendMidiOffOnImpulse();}, "c"+String(v) }; };
-  constexpr Action Rewind() {      return { [](){ Gu::Midi::MidiCC<116> midi); midi.sendMidiOnce();}, "Rew" }; };
-  constexpr Action FastForward() { return { [](){ Gu::Midi::MidiCC<117> midi); midi.sendMidiOnce();}, "FFw" }; };
-  constexpr Action Stop() {        return { [](){ Gu::Midi::MidiCC<118> midi; midi.sendMidiOnce();}, "Stp" }; };
-  constexpr Action Play() {        return { [](){ Gu::Midi::MidiCC<119> midi; midi.sendMidiOnce();}, "Pla" }; };
+  constexpr Action Note(byte v) {  return { [](){ auto midi= Gu::Midi::MidiNote(v); MidiSender::sendMidiToggle(midi); }, "\1"+String(v) }; };
+  constexpr Action CC(byte v) {    return { [](){ auto midi= Gu::Midi::MidiCC(v); MidiSender::sendMidiOffOnImpulse(midi);}, "c"+String(v) }; };
+  constexpr Action Rewind() {      return { [](){ auto midi= Gu::Midi::MidiCC(116); MidiSender::sendMidiOnce(midi);}, "Rew" }; };
+  constexpr Action FastForward() { return { [](){ auto midi= Gu::Midi::MidiCC(117); MidiSender::sendMidiOnce(midi);}, "FFw" }; };
+  constexpr Action Stop() {        return { [](){ auto midi= Gu::Midi::MidiCC(118); MidiSender::sendMidiOnce(midi);}, "Stp" }; };
+  constexpr Action Play() {        return { [](){ auto midi= Gu::Midi::MidiCC(119); MidiSender::sendMidiOnce(midi);}, "Pla" }; };
   //error: 'MidiCC' is not a member of 'Gu::Midi'
-  constexpr Action Loop() {        return { [](){ Gu::Midi::MidiCC<115> midi; midi.sendMidiOnce();}, "Lop" }; };
-  constexpr Action Record() {      return { [](){ Gu::Midi::MidiCC<114> midi; midi.sendMidiOnce();}, "Rec" }; };
+  constexpr Action Loop() {        return { [](){ Gu::Midi::MidiCC<115> midi; MidiSender::sendMidiOnce(midi);}, "Lop" }; };
+  constexpr Action Record() {      return { [](){ Gu::Midi::MidiCC<114> midi; MidiSender::sendMidiOnce(midi);}, "Rec" }; };
 }
 
 #endif
