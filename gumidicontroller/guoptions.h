@@ -1,3 +1,6 @@
+/*
+Gu::Options holds all hardware specific constants and configs
+*/
 #ifndef guOptions_H
 #define guOptions_H
 #include "guhelpers.h"
@@ -45,6 +48,7 @@ using namespace Gu::Programs;
 
 //error: 'constexpr Gu::Actions::Action Gu::Actions::Midi::CC(byte)' called in a constant expression
 //error: 'constexpr Gu::Actions::Action Gu::Actions::Midi::CC(byte)' called in a constant expression
+//to powinno pewnie pójść do *.ino
 constexpr guProgramConfig<numberOfUserButtons> programsConfigs[] {
   { { Note(36), Note(37), Note(38), Note(39) }, "S8 ch1,2"},
   { { Note(41), Note(42), Note(43), Note(44) }, "S8 ch3,4"},

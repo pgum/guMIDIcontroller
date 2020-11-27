@@ -1,3 +1,8 @@
+/*
+Gu::Programs contains class related to connecting available Actions.
+It organizes Actions into banks of programs able to be triggered by physical buttons.
+If implements its won Actions in namespace Gu::Actions::Programs to iterate over programs.
+*/
 #ifndef guProgramsCfg_H
 #define guProgramsCfg_H
 #include <Arduino.h>

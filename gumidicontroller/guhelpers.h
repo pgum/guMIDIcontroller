@@ -1,5 +1,9 @@
+/*
+Header containing helper typedefs and domain/project enums.
+*/
 #ifndef guHelpers_H
 #define guHelpers_H
+#include <Arduino.h>
 
 using SerialBaudRate = unsigned long;
 using timeMilliSeconds = unsigned long;

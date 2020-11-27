@@ -1,3 +1,7 @@
+/*
+Gu::Midi implements MidiValue class that sends midi data thru USB.
+It adds Midi related actions to Gu::Actions::Midi.
+*/
 #ifndef guMidi_H
 #define guMidi_H
 
