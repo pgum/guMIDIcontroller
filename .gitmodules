@@ -1,0 +1,3 @@
+[submodule "gumidicontroller/functional-avr"]
+	path = gumidicontroller/functional-avr
+	url = https://github.com/winterscar/functional-avr
