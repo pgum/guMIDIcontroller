@@ -10,21 +10,21 @@ namespace Gu::JackSelector{
 struct guJackSelector {
   const Pin InputAPin;
   const Pin InputBPin;
-  const eepromAddress eepromAddress;
+  const eepromAddress MemoryEepromAddress;
   constexpr static InputId inputA = 0;
   constexpr static InputId inputB = 1;
   constexpr static InputId inputNone = 125;
   InputId selectedInput;
-  guJackSelector(Pin inA, Pin inB): InputAPin(inA), InputBPin(inB) {}
+  guJackSelector(Pin inA, Pin inB, eepromAddress memoryEepromAddress): InputAPin(inA), InputBPin(inB), MemoryEepromAddress(memoryEepromAddress) {}
   void Select(const InputId inputId){
     if(inputId == inputNone) return;
     inputId == inputA ? SelectA() : SelectB();
   }
   void updateEeprom(){
-    EEPROM.update(eepromAddress, jackSelector.selectedInput); 
+    EEPROM.update(MemoryEepromAddress, selectedInput); 
   }
   void loadFromEeprom(){
-    Select(EEPROM.read(eepromAddress));
+    Select(EEPROM.read(MemoryEepromAddress));
   }
   void SelectA(){
     digitalWrite(InputAPin,HIGH);
@@ -50,13 +50,14 @@ struct guJackSelector {
     loadFromEeprom();
   }
 };
-}
+} //namespace Gu::JackSelector
 
 namespace Gu::Actions::JackSelector {
-  constexpr Action InputA(const guJackSelector& jackSelector) { return { [&](){ jackSelector.SelectA(); }, "\1A"}; };
-  constexpr Action InputB(const guJackSelector& jackSelector) { return { [&](){ jackSelector.SelectB(); }, "\1B" }; };
-  constexpr Action InputOther(const guJackSelector& jackSelector) { return { [&](){ jackSelector.selectedInput ? SelectB() : SelectA(); }, "Otr" }; };
-  constexpr Action InputNone(const guJackSelector& jackSelector) { return { [&](){ jackSelector.selectedInput ? SelectB() : SelectA(); }, "Otr" }; };
-}
+  using namespace Gu::JackSelector;
+  Action InputA(const guJackSelector& jackSelector) { return { [&](){ jackSelector.SelectA(); }, "\1A"}; };
+  Action InputB(const guJackSelector& jackSelector) { return { [&](){ jackSelector.SelectB(); }, "\1B" }; };
+  Action InputOther(const guJackSelector& jackSelector) { return { [&](){ jackSelector.selectedInput ? jackSelector.SelectB() : jackSelector.SelectA(); }, "Otr" }; };
+  Action InputNone(const guJackSelector& jackSelector) { return { [&](){ jackSelector.selectedInput ? jackSelector.SelectB() : jackSelector.SelectA(); }, "Non" }; };
+} //namespace Gu::Actions::JackSelector
 
 #endif

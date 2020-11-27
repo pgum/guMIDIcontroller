@@ -62,15 +62,14 @@ class guLcd {
   LiquidCrystal_I2C lcd;
   lcdDimention rows, cols;
 };
-} // namespace Gu::Lcd
-/*
-//TODO: TO nie działa
+} //namespace Gu::Lcd
+
 namespace Gu::Actions::Lcd {
-  constexpr Action EnableAlwaysOn(const Gu::Lcd::guLcd& lcd) { return { [=](){ lcd.enableAlwaysOn(); }, "LAE" }; };
-  constexpr Action DisableAlwaysOn(const Gu::Lcd::guLcd& lcd) { return { [=](){ lcd.disableAlwaysOn(); }, "LAD" }; };
-  constexpr Action ToggleAlwaysOn(const Gu::Lcd::guLcd& lcd) { return { [=](){ lcd.toggleAlwaysOn(); }, "LAT" }; };
-  constexpr Action print2ndLineWithTimeout(const Gu::Lcd::guLcd& lcd, const String& text) { return { [=](){ lcd.print(text); }, "LPT" }; };
-  constexpr Action ExtendLcdBacklight(const Gu::Lcd::guLcd& lcd, timeMilliSeconds timeMs = oneMinute) { return { [=](){ lcd.extendLcdBacklight(timeMs); }, "LEB" }; };
-}
-*/
+  Action EnableAlwaysOn(const Gu::Lcd::guLcd& lcd) { return { [&](){ lcd.enableAlwaysOn(); }, "LAE" }; };
+  Action DisableAlwaysOn(const Gu::Lcd::guLcd& lcd) { return { [&](){ lcd.disableAlwaysOn(); }, "LAD" }; };
+  Action ToggleAlwaysOn(const Gu::Lcd::guLcd& lcd) { return { [&](){ lcd.toggleAlwaysOn(); }, "LAT" }; };
+  Action print2ndLineWithTimeout(const Gu::Lcd::guLcd& lcd, const String& text) { return { [&](){ lcd.print(text); }, "LPT" }; };
+  Action ExtendLcdBacklight(const Gu::Lcd::guLcd& lcd, timeMilliSeconds timeMs = oneMinute) { return { [&](){ lcd.extendLcdBacklight(timeMs); }, "LEB" }; };
+} //namespace Gu::Actions::Lcd
+
 #endif

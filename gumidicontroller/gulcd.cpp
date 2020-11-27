@@ -1,6 +1,6 @@
 #include "gulcd.h"
 
-namespace Gu::Lcd {
+using namespace Gu::Lcd;
 
 guLcd::guLcd(i2cAddress i2cAddr, lcdDimention rows, lcdDimention cols): lcd(i2cAddr, rows, cols), rows(rows), cols(cols) {};
 
@@ -111,5 +111,3 @@ void guLcd::noDisplay() { lcd.noBacklight(); lcd.noDisplay(); isdisplay = false;
 void guLcd::toggleAlwaysOn(){ alwaysOn ? disableAlwaysOn() : enableAlwaysOn(); }
 void guLcd::enableAlwaysOn(){ alwaysOn = true; isbacklight = true; printWithTimeout("LCD Always On   ", oneSecond ); }
 void guLcd::disableAlwaysOn(){ alwaysOn = false; printWithTimeout("LCD has timeout ", oneSecond); }
-
-}

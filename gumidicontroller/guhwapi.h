@@ -71,5 +71,5 @@ class guHwApi {
     }
 };
 
-}
+} //namespace Gu::HWApi
 #endif

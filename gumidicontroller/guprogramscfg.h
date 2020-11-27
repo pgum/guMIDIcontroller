@@ -15,35 +15,26 @@ namespace Gu::Programs {
 
 template <byte numberOfUserButtons>
 //TODO: std::pair<Gu::Actions::Action actionsList[numberOfUserButtons],char*> ?
-struct guProgramConfig { 
+struct BankSetting { 
   const Gu::Actions::Action actionsList[numberOfUserButtons];
   const char* programName;
-  String toString() {
-    String boardRepresentationString;
-    //TODO: nie da sie map'y jakoś? foreach?
-    for(auto i= 0; i < numberOfUserButtons; ++i){
-      boardRepresentationString+= actionsList[i].toString() + " ";
-    }
-    return boardRepresentationString;
-  }
 };
 
 template <byte numberOfUserButtons, 
           byte defaultProgram = 0>
-struct guProgramsCfg { 
+struct BankController { 
   using programId = byte;
-  using programConfig = guProgramConfig<numberOfUserButtons>;
-  programConfig *c;
+  using bankSetting = BankSetting<numberOfUserButtons>;
+  bankSetting *c;
   uint8_t numberOfPrograms;
   programId currentProgramId;
   byte eepromAddr;
-  //warning: invalid conversion from 'const programConfig* {aka const Gu::Programs::guProgramConfig<4>*}' to 'Gu::Programs::guProgramsCfg<4>::programConfig* {aka Gu::Programs::guProgramConfig<4>*}' [-fpermissive]
-  guProgramsCfg(const programConfig* config= NULL):c(config) { currentProgramId= defaultProgram; numberOfPrograms= sizeof(config)/sizeof(guProgramConfig<numberOfUserButtons>); }
-  void loadConfig(const programConfig* config){ c= config; }
+  BankController(const bankSetting* config= NULL):c(config) { currentProgramId= defaultProgram; numberOfPrograms= sizeof(config)/sizeof(BankSetting<numberOfUserButtons>); }
+  void loadConfig(const bankSetting* config){ c= config; }
   Gu::Actions::Action triggerAction(BtnId buttonId) const {  (c[currentProgramId].actionsList[buttonId].callback)(); }
   void setProgram(programId programNumber) { currentProgramId = programNumber % numberOfPrograms; }
   byte getProgramId() { return currentProgramId % numberOfPrograms; }
-  programConfig* getCurrentProgram() const { return c+currentProgramId; }
+  bankSetting* getCurrentProgram() const { return c+currentProgramId; }
   void updateEeprom() { EEPROM.update(eepromAddr, currentProgramId); }
   void loadFromEeprom() { setProgram(EEPROM.read(eepromAddr)); }
   void next() { currentProgramId = (currentProgramId + 1) % numberOfPrograms; updateEeprom(); }
@@ -63,10 +54,14 @@ struct guProgramsCfg {
     auto currentConfig= getCurrentProgram();
     //error: could not convert 'currentConfig' from 'Gu::Programs::guProgramConfig<4>*' to 'String&&
     //ale ja chce użyc mojego operator String() z góry...
-    String lowerLine= currentConfig->toString() + emptyLine64Width;
-    return lowerLine;
+    String desc = "";
+    for(int i=0; i< numberOfUserButtons; ++i){
+      desc+=String(currentConfig->actionsList[i].name)+String(" ");
+    }
+    return desc + emptyLine64Width;
   }
-  };
+};
+
 } //namespace Gu::Programs
 /*
 //TODO: to nie dziala

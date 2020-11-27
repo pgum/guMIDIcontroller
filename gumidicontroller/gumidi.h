@@ -74,6 +74,6 @@ namespace Gu::Actions::Midi {
   Action Play() {        return { [&](){ auto midi= MidiCC(119); MidiSender::sendMidiOnce(midi);}, "Pla" }; };
   Action Loop() {        return { [&](){ auto midi= MidiCC(115); MidiSender::sendMidiOnce(midi);}, "Lop" }; };
   Action Record() {      return { [&](){ auto midi= MidiCC(114); MidiSender::sendMidiOnce(midi);}, "Rec" }; };
-}
+} //namespace Gu::Actions::Midi
 
 #endif

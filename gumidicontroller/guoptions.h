@@ -4,8 +4,11 @@ Gu::Options holds all hardware specific constants and configs
 #ifndef guOptions_H
 #define guOptions_H
 #include "guhelpers.h"
-#include "gumidi.h"
+#include "guhwapi.h"
+#include "gujackselector.h"
 #include "gulcd.h"
+#include "gumidi.h"
+#include "guprogramscfg.h"
 
 namespace Gu::Options {
 
@@ -28,8 +31,7 @@ constexpr timeMilliSeconds lcdTimeoutPrintTime = oneSecond;
 constexpr Pin outputSelectorOutputAPin = Pin04;
 constexpr Pin outputSelectorOutputBPin = Pin05;
 
-//TODO: constexpr guHwConfig <> hwCfg {
-constexpr guHwConfig <numberOfUserButtons, numberOfControlButtons> hwCfg {
+constexpr Gu::HWApi::guHwConfig <numberOfUserButtons, numberOfControlButtons> hwCfg {
   { { UserBtnId(0), Pin06 },
     { UserBtnId(1), Pin07 },
     { UserBtnId(2), Pin08 },
@@ -42,24 +44,7 @@ constexpr guHwConfig <numberOfUserButtons, numberOfControlButtons> hwCfg {
     { CtrlBtnId(4), Pin20 } },
 };
 
-using namespace Gu::Actions::Midi;
-using namespace Gu::Programs;
-//constexpr byte numberOfPrograms = 9; //sizeof(programsConfigs)/sizeof(guProgramConfig<numberOfUserButtons>);
 
-//error: 'constexpr Gu::Actions::Action Gu::Actions::Midi::CC(byte)' called in a constant expression
-//error: 'constexpr Gu::Actions::Action Gu::Actions::Midi::CC(byte)' called in a constant expression
-//to powinno pewnie pójść do *.ino
-constexpr guProgramConfig<numberOfUserButtons> programsConfigs[] {
-  { { Note(36), Note(37), Note(38), Note(39) }, "S8 ch1,2"},
-  { { Note(41), Note(42), Note(43), Note(44) }, "S8 ch3,4"},
-  { { Note(45), Note(46), Note(48), Note(49) }, "S8 ch5,6"},
-  { { Note(50), Note(51), Note(52), Note(53) }, "S8 ch7,8"},
-  { { Stop(), Play(), Loop(), Record() },       "Transprt"},
-  { { CC(21), CC(22), CC(23), CC(24) },         " Reaper "},
-  { { CC(80), CC(81), CC(82), CC(83) },         "BOSS 202"},
-  { { CC(80), CC(81), CC(83), CC(84) },         "BOSS 202"}
-  //{ { InputA(), None(), None(),InputB()},       "A/B>\1Swt"}
-};
 
 }
 
