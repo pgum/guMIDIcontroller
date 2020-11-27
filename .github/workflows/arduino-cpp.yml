@@ -8,9 +8,7 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - name: Install Arduino CLI
       uses: arduino/setup-arduino-cli@v1.1.1
@@ -39,3 +37,33 @@ jobs:
       run: |
           cd gumidicontroller
           arduino-cli compile --fqbn arduino:avr:leonardo --verify --warnings all --build-properties std=c++1z
+  build-no-warnings:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install Arduino CLI
+      uses: arduino/setup-arduino-cli@v1.1.1
+    - uses: actions/checkout@v2
+    - name: Show list of installed libraries, and list of cores on clear system
+      run: |
+          arduino-cli lib list
+          arduino-cli core list
+    - name: Install Platform
+      run: |
+          arduino-cli core update-index
+          arduino-cli core install arduino:avr
+    - name: Install Libraries
+      run: |
+          arduino-cli lib install AceButton 
+          arduino-cli lib install Array 
+          arduino-cli lib install EveryTimer 
+          arduino-cli lib install MIDIUSB 
+          arduino-cli lib install TimerOne 
+          arduino-cli lib install "LiquidCrystal I2C"
+    - name: Show list of installed libraries after installing platform and libraries
+      run: | 
+          arduino-cli lib list
+          arduino-cli core list
+    - name: Compile C++20
+      run: |
+          cd gumidicontroller
+          arduino-cli compile --fqbn arduino:avr:leonardo --verify --warnings none --build-properties std=c++1z
