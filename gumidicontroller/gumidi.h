@@ -72,8 +72,8 @@ namespace Gu::Actions::Midi {
   Action FastForward() { return { [&](){ auto midi= MidiCC(117); MidiSender::sendMidiOnce(midi);}, "FFw" }; };
   Action Stop() {        return { [&](){ auto midi= MidiCC(118); MidiSender::sendMidiOnce(midi);}, "Stp" }; };
   Action Play() {        return { [&](){ auto midi= MidiCC(119); MidiSender::sendMidiOnce(midi);}, "Pla" }; };
-  Action Loop() {        return { [&](){ MidiCC<115> midi; MidiSender::sendMidiOnce(midi);}, "Lop" }; };
-  Action Record() {      return { [&](){ MidiCC<114> midi; MidiSender::sendMidiOnce(midi);}, "Rec" }; };
+  Action Loop() {        return { [&](){ auto midi= MidiCC(115); MidiSender::sendMidiOnce(midi);}, "Lop" }; };
+  Action Record() {      return { [&](){ auto midi= MidiCC(114); MidiSender::sendMidiOnce(midi);}, "Rec" }; };
 }
 
 #endif
