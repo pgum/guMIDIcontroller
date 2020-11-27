@@ -66,8 +66,8 @@ namespace Gu::Actions::Midi {
   //error: 'midi' was not declared in this scope
   //error: could not convert '{<lambda closure object>Gu::Actions::Midi::Note(byte)::<lambda()>{}, operator+(StringSumHelper(((const char*)"\001")), String(v, 10))}' from '<brace-enclosed initializer list>' to 'Gu::Actions::Action'
   using namespace Gu::Midi;
-  Action Note(byte v) {  return { [&](){ auto midi= MidiNote(v); MidiSender::sendMidiToggle(midi); }, "\1"+String(v) }; };
-  Action CC(byte v) {    return { [&](){ auto midi= MidiCC(v); MidiSender::sendMidiOffOnImpulse(midi);}, "c"+String(v) }; };
+  Action Note(byte v) {  return { [&](){ auto midi= MidiNote(v); MidiSender::sendMidiToggle(midi); }, String("\1"+String(v)).c_str() }; };
+  Action CC(byte v) {    return { [&](){ auto midi= MidiCC(v); MidiSender::sendMidiOffOnImpulse(midi);}, String("c"+String(v)).c_str() }; };
   Action Rewind() {      return { [&](){ auto midi= MidiCC(116); MidiSender::sendMidiOnce(midi);}, "Rew" }; };
   Action FastForward() { return { [&](){ auto midi= MidiCC(117); MidiSender::sendMidiOnce(midi);}, "FFw" }; };
   Action Stop() {        return { [&](){ auto midi= MidiCC(118); MidiSender::sendMidiOnce(midi);}, "Stp" }; };
