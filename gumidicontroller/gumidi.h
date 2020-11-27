@@ -2,14 +2,15 @@
 Gu::Midi implements MidiValue class that sends midi data thru USB.
 It adds Midi related actions to Gu::Actions::Midi.
 */
+#pragma once
 #ifndef guMidi_H
 #define guMidi_H
 
 #include <stddef.h>
 #include <MIDIUSB.h>
 #include <Arduino.h>
-#include "guhelpers.h"
 #include "guaction.h"
+#include "guhelpers.h"
 
 namespace Gu::Midi {
 constexpr byte Channel = 16;

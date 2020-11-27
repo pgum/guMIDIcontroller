@@ -1,6 +1,7 @@
 /*
 Header containing helper typedefs and domain/project enums.
 */
+#pragma once
 #ifndef guHelpers_H
 #define guHelpers_H
 #include <Arduino.h>

@@ -1,12 +1,13 @@
 #include <EEPROM.h>
 #include <AceButton.h>
 //#include <ButtonConfig.h>
+#include "guaction.h"
 #include "guprogramscfg.h"
 #include "guhelpers.h"
 #include "gumidi.h"
 #include "gulcd.h"
 #include "guhwapi.h"
-//#include "gujackselector.h"
+#include "gujackselector.h"
 #include "guoptions.h"
 
 namespace {

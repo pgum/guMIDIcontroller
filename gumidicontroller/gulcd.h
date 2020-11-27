@@ -2,14 +2,15 @@
 Gu::Lcd::guLcd controls printing to HD44870 display with help of LiquidCrystal I2C library
 It adds Actions under Gu::Actions::Lcd namespace.
 */
+#pragma once
 #ifndef guLcd_H
 #define guLcd_H
 
 #include <Arduino.h>
 #include <LiquidCrystal_I2C.h>
+#include "guaction.h"
 #include "guhelpers.h"
 #include "guprogramscfg.h"
-#include "guaction.h"
 
 namespace Gu::Lcd {
 

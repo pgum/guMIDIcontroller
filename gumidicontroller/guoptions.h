@@ -1,6 +1,7 @@
 /*
 Gu::Options holds all hardware specific constants and configs
 */
+#pragma once
 #ifndef guOptions_H
 #define guOptions_H
 #include "guhelpers.h"

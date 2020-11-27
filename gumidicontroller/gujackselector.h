@@ -2,8 +2,10 @@
 Gu::JackSelector namespace holds device interface to control relay switching between two jack outputs.
 It adds Actions under Gu::Actions::JackSelector namespace.
 */
+#pragma once
 #ifndef guJackSelector_H
 #define guJackSelector_H
+#include "guaction.h"
 #include "guhelpers.h"
 
 namespace Gu::JackSelector{

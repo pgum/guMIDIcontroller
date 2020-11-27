@@ -1,6 +1,7 @@
 /*
 Gu::HWApi holds class that manages physical button inputs using AceButton library.
 */
+#pragma once
 #ifndef guHWapi_H
 #define guHWapi_H
 #include <Arduino.h>
