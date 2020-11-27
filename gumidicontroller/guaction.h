@@ -5,6 +5,7 @@
 #include <Arduino.h>
 
 namespace Gu::Actions {
+//a może da sie variable template na Callback zrobić?
 using Callback = void *();
 //using Callback = std::function<void()>;
 
@@ -12,6 +13,8 @@ struct Action {
   Callback callback;
   const char* name;
   //TODO: jakbym to chciał przerobić na operator String(...){}? to jak?
+  //std::initializer_list<Q> takie coś gdzieś? https://en.cppreference.com/w/cpp/language/list_initialization
+  //bo struct nie może mieć metod w środku, tak?
   String toString(){ return String(name); }
 };
 

@@ -58,6 +58,7 @@ namespace Gu::Actions::Midi {
   //error: 'v' is not captured
   //note: the lambda has no capture-default
   //error: 'midi' was not declared in this scope
+  //error: could not convert '{<lambda closure object>Gu::Actions::Midi::Note(byte)::<lambda()>{}, operator+(StringSumHelper(((const char*)"\001")), String(v, 10))}' from '<brace-enclosed initializer list>' to 'Gu::Actions::Action'
   constexpr Action Note(byte v) {  return { [](){ Gu::Midi::MidiNote<v> midi; midi.sendMidiToggle(); }, "\1"+String(v) }; };
   constexpr Action CC(byte v) {    return { [](){ Gu::Midi::MidiCC<v> midi; midi.sendMidiOffOnImpulse();}, "c"+String(v) }; };
   constexpr Action Rewind() {      return { [](){ Gu::Midi::MidiCC<116> midi); midi.sendMidiOnce();}, "Rew" }; };
