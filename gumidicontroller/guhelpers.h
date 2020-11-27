@@ -36,6 +36,6 @@ enum Pin : PinAddressType {Pin04 = 4, Pin05, Pin06, Pin07, Pin08, Pin09, Pin10,
 const String emptyLine5Width= String("     ");
 const String emptyLine8Width= String("        ");
 const String emptyLine64Width= String("                                                                ");
-const String emptyLine128Width= emptyLine64Width+emptyLine64Width;
+//const String emptyLine128Width= emptyLine64Width+emptyLine64Width;
 
 #endif

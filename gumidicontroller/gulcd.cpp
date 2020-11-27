@@ -46,7 +46,6 @@ void guLcd::printWithProgramHalt(const String& first, const String& second, time
 }
 
 String guLcd::prepareLineToPrint(const String& source) {
-  const String emptyLine64Width = "                                                                "; //lol
   String textToDisplay = source + emptyLine64Width;
   return textToDisplay.substring(0, cols);
 }

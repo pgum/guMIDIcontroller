@@ -1,6 +1,5 @@
 #include <EEPROM.h>
 #include <AceButton.h>
-//#include <ButtonConfig.h>
 #include "guaction.h"
 #include "guprogramscfg.h"
 #include "guhelpers.h"
@@ -21,7 +20,6 @@ using namespace Gu::Programs;
 Gu::HWApi::guHwApi<numberOfUserButtons, numberOfControlButtons> hwApi(hwCfg);
 Gu::Lcd::guLcd lcd(lcdI2C, lcdRows, lcdCols); 
 guJackSelector jackSelector(outputSelectorOutputAPin, outputSelectorOutputBPin, eepromAddrOutputSelector);
-Gu::Programs::BankController<numberOfUserButtons> programs;
 
 BankSetting<numberOfUserButtons> programsConfigs[] {
   { { Note(36), Note(37), Note(38), Note(39) }, "S8 ch1,2"},
@@ -32,10 +30,13 @@ BankSetting<numberOfUserButtons> programsConfigs[] {
   { { CC(21), CC(22), CC(23), CC(24) },         " Reaper "},
   { { CC(80), CC(81), CC(82), CC(83) },         "BOSS 202"},
   { { CC(80), CC(81), CC(83), CC(84) },         "BOSS 202"},
-  { { InputA(jackSelector), None(), None(),InputB(jackSelector)},       "A/B>\1Swt"}
-};
+  { { InputA(jackSelector), None(), None(),InputB(jackSelector)}, "A/B>\1Swt"} };
 
-}
+//czemu to nie działa
+//programs.loadConfig(programsConfigs);
+//a to dziala:
+Gu::Programs::BankController<numberOfUserButtons> programs(programsConfigs);
+} //namespace anonymous
 
 void handleButtonsEvent(AceButton* button, uint8_t eventType, uint8_t) {
   const auto buttonId = button->getId();
@@ -56,13 +57,27 @@ void handleControlSwitch(CtrlBtnId id){
   }
 }
 
+void handleControlButtonsEvent(AceButton* button, uint8_t eventType, uint8_t) {
+  const auto ctrlBtnId = button->getId();
+  if(eventType == AceButton::kEventPressed) {
+    if(ctrlBtnId > CtrlBtnId(1)) handleControlSwitch(ctrlBtnId);
+    if(lcd.isBacklight()){
+      if(ctrlBtnId == CtrlBtnId(0)){ programs.prev(); lcd.printBothLines(programs.printProgramName(), programs.printProgramDescription());}
+      if(ctrlBtnId == CtrlBtnId(1)){ programs.next(); lcd.printBothLines(programs.printProgramName(), programs.printProgramDescription());}
+      EEPROM.update(eepromAddrLastProgram, programs.getProgramId()); 
+    }else{
+      lcd.extendLcdBacklight();
+    }
+  }
+}
+
 void setup() {
   Serial.begin(serialBaud);
   lcd.init();
   hwApi.userButtonsEventHandler = handleButtonsEvent;
   hwApi.ctrlButtonsEventHandler = handleControlSwitch;
   hwApi.init();
-  //jackSelector.init();
+  jackSelector.init();
   lcd.intro(__DATE__, __TIME__, ProductName, ProductVersion, programs.signature() + " " + hwApi.signature());
   programs.loadFromEeprom();
   lcd.printBothLines(programs.printProgramName(), programs.printProgramDescription());

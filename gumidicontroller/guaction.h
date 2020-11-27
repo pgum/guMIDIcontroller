@@ -16,7 +16,7 @@ struct Action {
   const char* name;
 };
 
-const Action None() { return { [](){ NULL; }, "---" }; };
+static Action None() { return { [](){ NULL; }, "---" }; };
 
 } //namespace Gu::Actions
 #endif

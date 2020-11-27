@@ -15,10 +15,9 @@ If implements its won Actions in namespace Gu::Actions::Programs to iterate over
 namespace Gu::Programs {
 
 template <byte numberOfUserButtons>
-//TODO: std::pair<Gu::Actions::Action actionsList[numberOfUserButtons],char*> ?
 struct BankSetting { 
   const Gu::Actions::Action actionsList[numberOfUserButtons];
-  const char* programName;
+  const char* bankName;
 };
 
 template <byte numberOfUserButtons, 
@@ -31,7 +30,7 @@ struct BankController {
   programId currentProgramId;
   byte eepromAddr;
   BankController(const bankSetting* config= NULL):c(config) { currentProgramId= defaultProgram; numberOfPrograms= sizeof(config)/sizeof(BankSetting<numberOfUserButtons>); }
-  void loadConfig(const bankSetting* config){ c= config; }
+  void loadConfig(const bankSetting* config){ c= config; numberOfPrograms= sizeof(config)/sizeof(BankSetting<numberOfUserButtons>); }
   Gu::Actions::Action triggerAction(BtnId buttonId) const {  (c[currentProgramId].actionsList[buttonId].callback)(); }
   void setProgram(programId programNumber) { currentProgramId = programNumber % numberOfPrograms; }
   byte getProgramId() { return currentProgramId % numberOfPrograms; }
@@ -48,7 +47,7 @@ struct BankController {
   }
   String printProgramName() const {
     auto currentConfig= getCurrentProgram();
-    String programNameRaw= String(currentConfig->programName);
+    String programNameRaw= String(currentConfig->bankName);
     return String("\2"+getProgramId()-1 % numberOfPrograms) + "  " + programNameRaw + "  " + String(getProgramId()+1 % numberOfPrograms)+String("\3");
   }
   String printProgramDescription() const {
