@@ -1,7 +1,13 @@
+/*
+Gu::HWApi holds class that manages physical button inputs using AceButton library.
+*/
 #ifndef guHWapi_H
 #define guHWapi_H
+#include <Arduino.h>
 #include <AceButton.h>
 #include "guhelpers.h"
+
+namespace Gu::HWApi{
 using namespace ace_button;
 
 struct guButtonCfg{
@@ -65,4 +71,5 @@ class guHwApi {
     }
 };
 
+}
 #endif

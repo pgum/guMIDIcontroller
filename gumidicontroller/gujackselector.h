@@ -1,7 +1,12 @@
+/*
+Gu::JackSelector namespace holds device interface to control relay switching between two jack outputs.
+It adds Actions under Gu::Actions::JackSelector namespace.
+*/
 #ifndef guJackSelector_H
 #define guJackSelector_H
 #include "guhelpers.h"
 
+namespace Gu::JackSelector{
 struct guJackSelector {
   const Pin InputAPin;
   const Pin InputBPin;
@@ -45,8 +50,9 @@ struct guJackSelector {
     loadFromEeprom();
   }
 };
+}
 
-namespace Gu::Actions {
+namespace Gu::Actions::JackSelector {
   constexpr Action InputA(const guJackSelector& jackSelector) { return { [&](){ jackSelector.SelectA(); }, "\1A"}; };
   constexpr Action InputB(const guJackSelector& jackSelector) { return { [&](){ jackSelector.SelectB(); }, "\1B" }; };
   constexpr Action InputOther(const guJackSelector& jackSelector) { return { [&](){ jackSelector.selectedInput ? SelectB() : SelectA(); }, "Otr" }; };

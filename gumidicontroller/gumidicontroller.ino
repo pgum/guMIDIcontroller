@@ -11,7 +11,7 @@
 
 namespace {
 using namespace Gu::Options;
-guHwApi<numberOfUserButtons, numberOfControlButtons> hwApi(hwCfg);
+Gu::HWApi::guHwApi<numberOfUserButtons, numberOfControlButtons> hwApi(hwCfg);
 Gu::Lcd::guLcd lcd(lcdI2C, lcdRows, lcdCols); 
 //guJackSelector jackSelector(outputSelectorOutputAPin, outputSelectorOutputBPin, eepromAddrOutputSelector);
 Gu::Programs::guProgramsCfg<numberOfUserButtons> programs;
