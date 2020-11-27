@@ -52,8 +52,6 @@ struct BankController {
   }
   String printProgramDescription() const {
     auto currentConfig= getCurrentProgram();
-    //error: could not convert 'currentConfig' from 'Gu::Programs::guProgramConfig<4>*' to 'String&&
-    //ale ja chce użyc mojego operator String() z góry...
     String desc = "";
     for(int i=0; i< numberOfUserButtons; ++i){
       desc+=String(currentConfig->actionsList[i].name)+String(" ");
@@ -64,11 +62,11 @@ struct BankController {
 
 } //namespace Gu::Programs
 /*
-//TODO: to nie dziala
 namespace Gu::Actions::Programs {
-  constexpr Action NextProgram(const Gu::Programs::guProgramsCfg& programsConfigs) { return { [=]()->auto{ programsConfigs.next(); }, "Nxt" }; }
-  constexpr Action PrevProgram(const Gu::Programs::guProgramsCfg& programsConfigs) { return { [=]()->auto{ programsConfigs.prev(); }, "Prv" }; }
-  constexpr Action ZeroProgram(const Gu::Programs::guProgramsCfg& programsConfigs) { return { [=]()->auto{ programsConfigs.setProgram(0); }, "P0" }; }
+  using namespace Gu::Programs;
+  static Action NextProgram(const BankController& programsConfigs) { return { [&]()->auto{ programsConfigs.next(); }, "Nxt" }; }
+  static Action PrevProgram(const BankController& programsConfigs) { return { [&]()->auto{ programsConfigs.prev(); }, "Prv" }; }
+  static Action ZeroProgram(const BankController& programsConfigs) { return { [&]()->auto{ programsConfigs.setProgram(0); }, "P0" }; }
 } //namespace Gu::Actions::Programs
 */
 #endif
