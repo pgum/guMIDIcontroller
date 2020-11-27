@@ -57,7 +57,7 @@ struct MidiSender {
     MidiUSB.sendMIDI(midi.turnOnPacket());
     MidiUSB.flush();
   }
-}
+};
 } //namespace Gu::Midi
 
 namespace Gu::Actions::Midi {
