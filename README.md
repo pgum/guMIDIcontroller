@@ -6,7 +6,7 @@
 
 All of these are available from Package Manager in Arduino IDE.  
 
-Features:  
+## Features
 * 7 program banks
 * Sends MIDI CC or notes over USB
 * Can control A/B input audio switch
@@ -15,13 +15,19 @@ Features:
 * Keeps input audio switch on power-off
 * Turns off LCD sreen after set timeout
 
-Known issues:  
+## Known issues:  
 * Names could be better  
 * Should refactor HWConfig to incorporate more things or change name to ButtonConfig  
 * UserAction, MidiValue and Action structs are mutants, because of them there are if's everywhere  
 * Dunno how to deal with EEPROM access. For now its handled in main file. 
 * Not all "raw" types are changed into meaningful aliases.
 * Control Switches (ctrlBtn2 and next in future) need to be checked upon setup also.
+
+## Pictures
+
+https://imgur.com/a/rM1fs5H
+
+## Take it and modify it
 
 Feel free to leave issue on github if you have comments or feature requests although I don't plan on developing this much more.  
 Code is used in "production" (made one copy of device, and it work :) ).  
